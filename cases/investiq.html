@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="InvestIQ — Redesign de App de Investimentos | Case Study" />
+  <meta property="og:title" content="InvestIQ — Simplificando Investimentos para Novos Investidores" />
+  <meta property="og:description" content="Como um redesign focado em educação reduziu o abandono em 67% e aumentou transações em 3.2x" />
+  <meta property="og:type" content="article" />
+
+  <title>InvestIQ — Case Study</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── DESIGN TOKENS ─── */
+    :root {
+      --bg-base:        oklch(15% 0.022 60);
+      --bg-surface:     oklch(20% 0.026 60);
+      --bg-surface-2:   oklch(25% 0.030 60);
+      --accent:         oklch(58% 0.12 148);
+      --accent-muted:   oklch(22% 0.05 148);
+      --text-primary:   oklch(90% 0.010 75);
+      --text-secondary: oklch(66% 0.010 75);
+      --text-muted:     oklch(48% 0.008 75);
+      --border-subtle:  oklch(27% 0.018 60);
+      --border-glass:   oklch(35% 0.022 60);
+      --font-display:   'Cormorant Garamond', Georgia, serif;
+      --font-body:      'Inter', system-ui, sans-serif;
+      --radius-sm:      6px;
+      --radius-md:      12px;
+      --radius-lg:      20px;
+      --radius-pill:    999px;
+      --duration-fast:  150ms;
+      --duration-base:  300ms;
+      --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-sm:      0 1px 4px oklch(7% 0.01 60 / 0.5);
+      --shadow-md:      0 4px 16px oklch(7% 0.01 60 / 0.6);
+      --shadow-lg:      0 8px 32px oklch(7% 0.01 60 / 0.7);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ─── CONTAINER ─── */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    @media (min-width: 768px) {
+      .container {
+        padding: 0 32px;
+      }
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      z-index: 1000;
+      transition: border-color var(--duration-base), background var(--duration-base), box-shadow var(--duration-base);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    @media (min-width: 768px) {
+      .navbar {
+        padding: 0 32px;
+      }
+    }
+    .navbar.scrolled {
+      background: oklch(15% 0.022 60 / 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom-color: var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-base);
+    }
+    .nav-back:hover {
+      color: var(--accent);
+    }
+
+    .nav-back svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 16px;
+      min-height: 32px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      transition: all var(--duration-base);
+    }
+    .lang-toggle:hover {
+      border-color: var(--border-glass);
+      color: var(--text-primary);
+    }
+    .lang-divider {
+      opacity: 0.4;
+      margin: 0 2px;
+    }
+    [data-lang-btn] {
+      transition: color var(--duration-base);
+    }
+    [data-lang-btn][data-active="true"] {
+      color: var(--accent);
+    }
+
+    /* ─── HERO SECTION ─── */
+    .case-hero {
+      margin-top: 72px;
+      padding: 80px 0 60px;
+      background: linear-gradient(135deg, oklch(58% 0.12 148 / 0.08) 0%, var(--bg-base) 60%);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    @media (min-width: 768px) {
+      .case-hero {
+        padding: 120px 0 80px;
+      }
+    }
+
+    .case-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .case-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .case-tagline {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 700px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* ─── METRICS GRID ─── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-top: 64px;
+    }
+    @media (min-width: 768px) {
+      .metrics-grid {
+        gap: 36px;
+      }
+    }
+
+    .metric-card {
+      padding: 28px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-base);
+    }
+    .metric-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+    }
+
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 400;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 1.6;
+    }
+
+    /* ─── SECTION ─── */
+    .section {
+      padding: 80px 0;
+    }
+    @media (min-width: 768px) {
+      .section {
+        padding: 128px 0;
+      }
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 48px;
+      letter-spacing: -0.01em;
+    }
+    @media (min-width: 768px) {
+      .section-heading {
+        margin-bottom: 64px;
+      }
+    }
+
+    /* ─── PROBLEM SECTION ─── */
+    .problem-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (min-width: 768px) {
+      .problem-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+      }
+    }
+
+    .problem-text h3 {
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+
+    .problem-text p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.8;
+    }
+
+    .research-box {
+      padding: 28px;
+      background: var(--bg-surface);
+      border-left: 2px solid var(--accent);
+      border-radius: var(--radius-md);
+      margin-top: 40px;
+    }
+
+    .research-box h4 {
+      font-size: 12px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .research-box p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .research-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    .insight-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .insight-item {
+      padding: 16px;
+      background: var(--accent-muted);
+      border: 1px solid oklch(58% 0.12 148 / 0.2);
+      border-radius: var(--radius-md);
+    }
+
+    .insight-item strong {
+      color: var(--accent);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .insight-item p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* ─── BEFORE/AFTER ─── */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-top: 60px;
+    }
+    @media (min-width: 768px) {
+      .comparison {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
+    }
+
+    .comparison-item {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .comparison-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .comparison-item.before .comparison-label {
+      color: #FF6B5B;
+    }
+
+    .comparison-item.after .comparison-label {
+      color: var(--accent);
+    }
+
+    .comparison-visual {
+      width: 100%;
+      aspect-ratio: 9/16;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .comparison-text {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── RESULTS SECTION ─── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 28px;
+      margin-top: 64px;
+    }
+
+    .result-card {
+      padding: 36px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-base);
+    }
+    .result-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .result-card h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .result-stat {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .result-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ─── PROCESS SECTION ─── */
+    .process-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      margin-top: 64px;
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    @media (min-width: 768px) {
+      .process-step {
+        gap: 56px;
+      }
+    }
+
+    .process-number {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--accent);
+      opacity: 0.3;
+    }
+
+    .process-content h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .process-content p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .process-content ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .process-content li {
+      color: var(--text-secondary);
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .process-content li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* ─── LEARNINGS ─── */
+    .learnings-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      margin-top: 64px;
+    }
+    @media (min-width: 768px) {
+      .learnings-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .learning-box {
+      padding: 36px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+    }
+
+    .learning-box h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .learning-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .learning-list li {
+      color: var(--text-secondary);
+      padding-left: 20px;
+      position: relative;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .learning-box.positive .learning-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .learning-box.negative .learning-list li::before {
+      content: '✗';
+      position: absolute;
+      left: 0;
+      color: #FF6B5B;
+    }
+
+    /* ─── CTA SECTION ─── */
+    .cta-section {
+      text-align: center;
+      padding: 100px 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+    @media (min-width: 768px) {
+      .cta-section {
+        padding: 120px 0;
+      }
+    }
+
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      margin-bottom: 32px;
+    }
+
+    .cta-section p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-bottom: 48px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    @media (min-width: 640px) {
+      .cta-buttons {
+        flex-direction: row;
+        gap: 20px;
+      }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all var(--duration-base);
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg-base);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn-secondary:hover {
+      background: var(--accent-muted);
+    }
+
+    /* ─── WIREFRAMES ─── */
+    .wireframe-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      margin-top: 48px;
+    }
+    @media (min-width: 768px) {
+      .wireframe-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+      }
+    }
+
+    .wireframe-item h3 {
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wireframe-item h3 span {
+      font-size: 20px;
+    }
+
+    .wireframe-canvas {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 9/16;
+      background: linear-gradient(135deg, #1a1f28 0%, #0e1419 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+
+    /* Wireframe Elements */
+    .wf-header {
+      height: 40px;
+      background: #0e1419;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+    }
+
+    .wf-title {
+      height: 28px;
+      background: var(--accent);
+      border-radius: 4px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+
+    .wf-text {
+      height: 16px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 3px;
+      margin-bottom: 6px;
+    }
+
+    .wf-text:last-child {
+      margin-bottom: 0;
+    }
+
+    .wf-button {
+      height: 40px;
+      background: var(--accent);
+      border-radius: 6px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    .wf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .wf-card {
+      aspect-ratio: 1;
+      background: rgba(124,111,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+    }
+
+    /* Mockup */
+    .mockup-canvas {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 9/16;
+      background: linear-gradient(135deg, #1a1f28 0%, #0e1419 100%);
+      border: 8px solid #1a1f28;
+      border-radius: var(--radius-lg);
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+      position: relative;
+    }
+
+    .mockup-canvas::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      background: #000;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mockup-content {
+      padding: 48px 20px 20px;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .mockup-label {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .mockup-heading {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.2;
+    }
+
+    .mockup-option {
+      padding: 14px;
+      background: rgba(124,111,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .mockup-option-title {
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .mockup-option-desc {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .mockup-button {
+      background: oklch(58% 0.12 148);
+      color: oklch(15% 0.022 60);
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 60px 0;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color var(--duration-base);
+    }
+    .footer a:hover {
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="../index.html" class="nav-back" aria-label="Voltar ao portfólio" data-i18n="nav.back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 19l-7-7 7-7"></path>
+      </svg>
+      <span>← Voltar</span>
+    </a>
+    <button class="lang-toggle" type="button" onclick="toggleLang()" aria-label="Alternar idioma">
+      <span data-lang-btn="pt" data-active="true">PT</span>
+      <span class="lang-divider">/</span>
+      <span data-lang-btn="en" data-active="false">EN</span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="case-hero">
+    <div class="container">
+      <span class="case-label" data-i18n="case.label">Case Study</span>
+      <h1 class="case-title">InvestIQ</h1>
+      <p class="case-tagline">Simplificando Investimentos para Novos Investidores — Como um redesign focado em educação reduziu o abandono em 67% e aumentou transações em 3.2x</p>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">↓67%</div>
+          <div class="metric-label" data-i18n="case.metric1">Redução de Abandono (Onboarding)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">+220%</div>
+          <div class="metric-label" data-i18n="case.metric2">Crescimento em Transações Mensais</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">-86%</div>
+          <div class="metric-label" data-i18n="case.metric3">Redução no Tempo para 1ª Transação</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">+71%</div>
+          <div class="metric-label" data-i18n="case.metric4">Melhoria em Retenção (30d)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-heading" data-i18n="section.context">Context</h2>
+
+      <div class="problem-content">
+        <div class="problem-text">
+          <h3>Contexto</h3>
+          <p><strong>InvestIQ</strong> é um app de investimentos B2C com 2.8M usuários, concentrados em investidores experientes. O objetivo era expandir para novos investidores (Gen Z, millennials sem experiência em investimentos).</p>
+
+          <p><strong>Desafio:</strong> O app tinha uma taxa de abandono de 47% durante o onboarding — a maioria dos novos usuários não conseguia completar sua primeira transação.</p>
+
+          <p><strong>Meu papel:</strong> Product Designer (UX/UI) responsável por pesquisa, design e validação da solução.</p>
+        </div>
+
+        <div class="problem-text">
+          <h3>Dados de Pesquisa</h3>
+          <div class="research-box">
+            <h4>Entrevistas com Usuários</h4>
+            <p>15 novos investidores entrevistados</p>
+            <p><em>"Não entendo onde clicar"</em></p>
+            <p><em>"Todos esses números me confundem"</em></p>
+          </div>
+
+          <div class="research-box" style="margin-top: 16px;">
+            <h4>Análise de Heatmaps</h4>
+            <p>47% abandonam antes de primeira transação</p>
+            <p>Principal ponto de saída: tela de "Seleção de Ativos"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMA -->
+  <section class="section" style="background: oklch(20% 0.028 62); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+    <div class="container">
+      <h2 class="section-heading" data-i18n="section.problem">The Problem</h2>
+
+      <div class="insight-list">
+        <div class="insight-item">
+          <strong>Paralisia por Análise</strong>
+          <p>Tela de seleção de ativos mostra 500+ opções — usuário não sabe por onde começar. Resultado: 56% abandonam nesta tela.</p>
+        </div>
+        <div class="insight-item">
+          <strong>Linguagem Técnica Alienante</strong>
+          <p>Termos como "volatilidade", "taxa de câmbio", "P/L" alienam iniciantes. Interface é feita para investidores experientes.</p>
+        </div>
+        <div class="insight-item">
+          <strong>Falta de Contexto</strong>
+          <p>Usuário não entende POR QUE deveria investir em ação X vs ação Y. Nenhuma recomendação personalizada.</p>
+        </div>
+        <div class="insight-item">
+          <strong>Educação Invisível</strong>
+          <p>Existe botão de ajuda, mas 89% dos usuários não o encontram. Educação está oculta em menu secundário.</p>
+        </div>
+      </div>
+
+      <div class="comparison">
+        <div class="comparison-item before">
+          <span class="comparison-label">❌ Antes (Problema)</span>
+          <div class="comparison-visual">
+            <div class="comparison-text">
+              <strong>500+ Ativos</strong><br>
+              <small style="opacity: 0.6;">Sem contexto, sem recomendações, usuário paralisa</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-item after">
+          <span class="comparison-label">✓ Depois (Solução)</span>
+          <div class="comparison-visual" style="background: var(--accent-muted);">
+            <div class="comparison-text">
+              <strong>3 Perfis Educados</strong><br>
+              <small style="opacity: 0.6;">Recomendações personalizadas, linguagem simples</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-heading" data-i18n="section.process">Process</h2>
+
+      <div class="process-timeline">
+        <div class="process-step">
+          <div class="process-number">01</div>
+          <div class="process-content">
+            <h3>Entender o Usuário</h3>
+            <p>Criei personas baseadas em dados de entrevistas e behavior analytics:</p>
+            <ul>
+              <li><strong>Jovem Curioso:</strong> 23-28 anos, curiosidade sobre investimentos, sem capital inicial</li>
+              <li><strong>Investidor Experiente:</strong> 35-50 anos, busca otimização de carteira</li>
+            </ul>
+            <p style="margin-top: 16px; color: var(--text-muted); font-size: 13px;">Foco: primeiro grupo (50% do novo tráfego, mas 0% de conversão)</p>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="process-number">02</div>
+          <div class="process-content">
+            <h3>Análise Competitiva</h3>
+            <p>Benchmarking com Nubank, C6 e BTG:</p>
+            <ul>
+              <li>Nubank: educação integrada com pop-ups educativos contextuais</li>
+              <li>C6: categorização por perfil (Agressivo/Moderado/Conservador)</li>
+              <li>BTG: recomendações personalizadas + explicações simples</li>
+            </ul>
+            <p style="margin-top: 16px; color: var(--text-muted); font-size: 13px;"><strong>Gap identificado:</strong> InvestIQ = zero educação na jornada</p>
+          </div>
+        </div>
+
+        <div class="process-step">
+          <div class="process-number">03</div>
+          <div class="process-content">
+            <h3>Validação com Usuários</h3>
+            <p>Testei 5 wireframes diferentes com 20 usuários:</p>
+            <ul>
+              <li><strong>Vencedor:</strong> "Categorias + Educação Inline" (78% preferência)</li>
+              <li>Usuários se sentiram guiados, não perdidos</li>
+              <li>Tempo para decisão: 28min → 4min</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUÇÃO -->
+  <section class="section" style="background: var(--bg-surface); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+    <div class="container">
+      <h2 class="section-heading" data-i18n="section.solution">The Solution</h2>
+
+      <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 48px; max-width: 750px;">
+        O redesign foi focado em <strong>educação + orientação</strong>, não em funcionalidade máxima. Três mudanças principais:
+      </p>
+
+      <div class="results-grid" style="margin-top: 48px;">
+        <div class="result-card" style="background: var(--bg-surface-2);">
+          <h3>Categorização por Perfil</h3>
+          <p style="color: var(--text-primary); font-size: 1rem; font-weight: 500; margin-bottom: 12px;">500+ ativos → 3 perfis</p>
+          <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Agressivo, Moderado (recomendado), Conservador. Reduz paralisia, educativo.</p>
+        </div>
+
+        <div class="result-card" style="background: var(--bg-surface-2);">
+          <h3>Recomendações Contextualizadas</h3>
+          <p style="color: var(--text-primary); font-size: 1rem; font-weight: 500; margin-bottom: 12px;">Top 3 ativos por perfil</p>
+          <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Com explicações simples ("Ação blue-chip com dividendos") + micro-learning ("Por quê?").</p>
+        </div>
+
+        <div class="result-card" style="background: var(--bg-surface-2);">
+          <h3>Linguagem Acessível</h3>
+          <p style="color: var(--text-primary); font-size: 1rem; font-weight: 500; margin-bottom: 12px;">Antes → Depois</p>
+          <p style="color: var(--text-muted); font-size: 13px; margin: 0;">"Volatilidade 2.1%" → "Seguro, com dividendos". Tecnês foi removido da jornada.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 64px; margin-bottom: 24px; font-size: 1.3rem;">Fluxo Redesenhado</h3>
+
+      <div style="padding: 32px; background: var(--bg-surface-2); border-radius: var(--radius-lg); margin-top: 32px;">
+        <p style="color: var(--text-secondary); line-height: 2; margin: 0;">
+          <strong style="color: var(--text-primary);">Antes:</strong> Abre app → Vê 500+ ativos → Paralisa → Sai<br>
+          <strong style="color: var(--accent);">Depois:</strong> Abre app → Escolhe perfil (3 opções) → Vê recomendações personalizadas → Investe (4min)
+        </p>
+      </div>
+
+      <!-- WIREFRAMES (Low Fidelity) -->
+      <h3 style="margin-top: 64px; margin-bottom: 32px; font-size: 1.3rem;">Wireframes — Estrutura da Solução</h3>
+
+      <div class="wireframe-grid">
+        <!-- BEFORE Wireframe -->
+        <div class="wireframe-item">
+          <h3><span>❌</span> Antes — Problema</h3>
+          <div class="wireframe-canvas">
+            <div class="wf-header"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden;">
+              <div class="wf-title" style="height: 20px; opacity: 0.5;"></div>
+              <div class="wf-text"></div>
+              <div class="wf-text" style="width: 80%;"></div>
+
+              <!-- Representa 500+ itens confusos -->
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 6px; margin-top: 12px; overflow: hidden;">
+                <div style="height: 14px; background: rgba(255,255,255,0.05); border-radius: 2px;"></div>
+                <div style="height: 14px; background: rgba(255,255,255,0.05); border-radius: 2px;"></div>
+                <div style="height: 14px; background: rgba(255,255,255,0.05); border-radius: 2px;"></div>
+                <div style="height: 14px; background: rgba(255,255,255,0.05); border-radius: 2px;"></div>
+                <div style="height: 14px; background: rgba(255,255,255,0.05); border-radius: 2px;"></div>
+                <div style="height: 14px; background: rgba(255,105,90,0.2); border-radius: 2px; border: 1px dashed #FF6B5B;"></div>
+                <div style="height: 14px; background: rgba(255,255,255,0.05); border-radius: 2px; opacity: 0.3;"></div>
+              </div>
+            </div>
+            <div style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 8px;">500+ ativos</div>
+          </div>
+        </div>
+
+        <!-- AFTER Wireframe -->
+        <div class="wireframe-item">
+          <h3><span>✓</span> Depois — Solução</h3>
+          <div class="wireframe-canvas">
+            <div class="wf-header"></div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+              <div class="wf-title" style="height: 20px; opacity: 0.8;"></div>
+
+              <!-- 3 Profile Options -->
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="padding: 10px; background: rgba(0,217,255,0.1); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px;">
+                  <div style="height: 10px; background: var(--accent); border-radius: 2px; width: 40%; margin-bottom: 4px;"></div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 2px;"></div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; width: 70%;"></div>
+                </div>
+                <div style="padding: 10px; background: rgba(0,217,255,0.1); border: 2px solid var(--accent); border-radius: 4px;">
+                  <div style="height: 10px; background: var(--accent); border-radius: 2px; width: 50%; margin-bottom: 4px;"></div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 2px;"></div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; width: 75%;"></div>
+                </div>
+                <div style="padding: 10px; background: rgba(0,217,255,0.1); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px;">
+                  <div style="height: 10px; background: var(--accent); border-radius: 2px; width: 45%; margin-bottom: 4px;"></div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 2px;"></div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; width: 70%;"></div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size: 10px; color: var(--accent); text-align: center; margin-top: 8px;">3 Perfis Educados</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOCKUPS (High Fidelity) -->
+      <h3 style="margin-top: 64px; margin-bottom: 32px; font-size: 1.3rem;">Mockups — Visual Refinado</h3>
+
+      <div class="wireframe-grid">
+        <!-- Screen 1: ANTES — Asset Selection -->
+        <div class="wireframe-item">
+          <h3><span>1️⃣</span> ANTES — Confuso</h3>
+          <img src="images/mockups/01-antes.png" alt="Tela ANTES: Seleção de ativo confusa com 500+ opções" style="width: 100%; max-width: 320px; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);" />
+        </div>
+
+        <!-- Screen 2: Escolha Perfil -->
+        <div class="wireframe-item">
+          <h3><span>2️⃣</span> Escolha de Perfil</h3>
+          <img src="images/mockups/02-perfil.png" alt="Tela de escolha: Seleção de perfil de investimento (Agressivo, Moderado, Conservador)" style="width: 100%; max-width: 320px; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);" />
+        </div>
+      </div>
+
+      <!-- Screen 3: Recomendações -->
+      <h3 style="margin-top: 48px; margin-bottom: 32px; font-size: 1.3rem;">Telas de Recomendações e Confirmação</h3>
+
+      <div class="wireframe-grid">
+        <div class="wireframe-item">
+          <h3><span>3️⃣</span> Top 3 Recomendações</h3>
+          <img src="images/mockups/03-recomendacoes.png" alt="Tela de recomendações personalizadas com top 3 ativos" style="width: 100%; max-width: 320px; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);" />
+        </div>
+
+        <div class="wireframe-item">
+          <h3><span>4️⃣</span> Revisar Investimento</h3>
+          <img src="images/mockups/04-revisar.png" alt="Tela de revisão: Confirmação do investimento com projeção de 10 anos" style="width: 100%; max-width: 320px; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);" />
+        </div>
+      </div>
+
+      <!-- Screen 5-6: Sucesso e Educação -->
+      <h3 style="margin-top: 48px; margin-bottom: 32px; font-size: 1.3rem;">Confirmação e Educação Contínua</h3>
+
+      <div class="wireframe-grid">
+        <div class="wireframe-item">
+          <h3><span>5️⃣</span> Sucesso! 🎉</h3>
+          <img src="images/mockups/05-sucesso.png" alt="Tela de sucesso: Investimento realizado com próximos passos" style="width: 100%; max-width: 320px; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);" />
+        </div>
+
+        <div class="wireframe-item">
+          <h3><span>6️⃣</span> Educação — Dividendos</h3>
+          <img src="images/mockups/06-educacao.png" alt="Tela de educação: Aprendendo sobre dividendos com exemplos práticos" style="width: 100%; max-width: 320px; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-heading" data-i18n="section.results">Results</h2>
+
+      <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 48px;">Impacto medido em 3 meses pós-lançamento:</p>
+
+      <div class="results-grid">
+        <div class="result-card">
+          <h3>Onboarding</h3>
+          <div class="result-stat">47% → 14%</div>
+          <div class="result-desc">Redução de abandono (↓67%)</div>
+        </div>
+
+        <div class="result-card">
+          <h3>Completion</h3>
+          <div class="result-stat">41% → 89%</div>
+          <div class="result-desc">Usuários completam onboarding (↑117%)</div>
+        </div>
+
+        <div class="result-card">
+          <h3>Primeira Transação</h3>
+          <div class="result-stat">28min → 4min</div>
+          <div class="result-desc">Tempo reduzido (↓86%)</div>
+        </div>
+
+        <div class="result-card">
+          <h3>Volume Transações</h3>
+          <div class="result-stat">4.2K → 13.2K/mês</div>
+          <div class="result-desc">Crescimento mensal (↑220%)</div>
+        </div>
+
+        <div class="result-card">
+          <h3>Retenção (30d)</h3>
+          <div class="result-stat">34% → 58%</div>
+          <div class="result-desc">Usuários que voltam (↑71%)</div>
+        </div>
+
+        <div class="result-card">
+          <h3>App Store Rating</h3>
+          <div class="result-stat">3.8 → 4.7⭐</div>
+          <div class="result-desc">Satisfação dos usuários</div>
+        </div>
+      </div>
+
+      <div style="padding: 32px; background: var(--accent-muted); border-radius: var(--radius-lg); margin-top: 48px; border: 1px solid oklch(58% 0.12 148 / 0.2);">
+        <p style="color: var(--text-secondary); margin: 0; line-height: 1.8;">
+          <strong style="color: var(--accent); display: block; margin-bottom: 12px;">Impacto de Negócio:</strong>
+          GMV incremental +R$2.1M/mês · CAC payback reduzido de 14 meses para 6 meses · LTV +340% (melhoria em retenção)
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEARNINGS -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-heading" data-i18n="section.learnings">Learnings</h2>
+
+      <div class="learnings-container">
+        <div class="learning-box positive">
+          <h3>O que Funcionou ✓</h3>
+          <ul class="learning-list">
+            <li>Educação inline > educação separada</li>
+            <li>Recomendações reduzem paralisia de escolha</li>
+            <li>Linguagem simples incrementa confiança</li>
+            <li>Progressão clara (perfil → recomendações → transação)</li>
+            <li>"Por quê?" buttons aumentam engagement em micro-learning</li>
+          </ul>
+        </div>
+
+        <div class="learning-box negative">
+          <h3>O que Não Funcionou ✗</h3>
+          <ul class="learning-list">
+            <li>Vídeos educativos (completavam mas caros de produzir)</li>
+            <li>Chat de ajuda live (usuários preferem FAQ auto-serve)</li>
+            <li>Gamificação inicial (confundia iniciantes)</li>
+            <li>Notificações de preço (gerava ansiedade no novato)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="padding: 32px; background: var(--bg-surface); border-radius: var(--radius-lg); margin-top: 48px;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 16px;">Próxima Iteração</h3>
+        <ul style="color: var(--text-secondary); padding-left: 20px; margin: 0;">
+          <li style="margin-bottom: 8px;">A/B testing em micro-copy ("Segura" vs "Estável")</li>
+          <li style="margin-bottom: 8px;">Recomendações baseadas em renda/objetivo (não só risco)</li>
+          <li>Social proof ("45K investidores iniciantes escolheram PETR4")</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Quer conversar sobre este projeto?</h2>
+      <p>Posso aprofundar em qualquer aspecto: pesquisa, design decisions, ou como escalar para outros mercados.</p>
+
+      <div class="cta-buttons">
+        <a href="mailto:eduardoazuolas@gmail.com" class="btn btn-primary">
+          Enviar um e-mail
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <a href="https://www.linkedin.com/in/eduardo-azuolas/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+          Conectar no LinkedIn
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect x="2" y="9" width="4" height="12"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p style="margin-bottom: 20px;">© 2025 Eduardo Azuolas. Designed with intention.</p>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        <a href="https://www.linkedin.com/in/eduardo-azuolas/" target="_blank" rel="noopener noreferrer">LinkedIn</a> ·
+        <a href="mailto:eduardoazuolas@gmail.com">Email</a> ·
+        <a href="../index.html">Portfolio</a>
+      </p>
+      <a href="../index.html">← Voltar ao portfólio</a>
+    </div>
+  </footer>
+
+  <script>
+    // ─── TRANSLATIONS ───
+    const translations = {
+      pt: {
+        'nav.back': '← Voltar',
+        'case.label': 'Case Study',
+        'case.metric1': 'Redução de Abandono (Onboarding)',
+        'case.metric2': 'Crescimento em Transações Mensais',
+        'case.metric3': 'Redução no Tempo para 1ª Transação',
+        'case.metric4': 'Melhoria em Retenção (30d)',
+        'section.context': 'Contexto',
+        'section.problem': 'O Problema',
+        'section.process': 'Processo',
+        'section.solution': 'A Solução',
+        'section.results': 'Resultados',
+        'section.learnings': 'Learnings'
+      },
+      en: {
+        'nav.back': '← Back',
+        'case.label': 'Case Study',
+        'case.metric1': 'Abandonment Drop (Onboarding)',
+        'case.metric2': 'Monthly Transaction Growth',
+        'case.metric3': 'Time to First Transaction Reduced',
+        'case.metric4': 'Retention Improvement (30d)',
+        'section.context': 'Context',
+        'section.problem': 'The Problem',
+        'section.process': 'Process',
+        'section.solution': 'The Solution',
+        'section.results': 'Results',
+        'section.learnings': 'Learnings'
+      }
+    };
+
+    let currentLang = localStorage.getItem('ea-portfolio-lang') || 'pt';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('ea-portfolio-lang', lang);
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      document.documentElement.setAttribute('data-lang', lang);
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key] !== undefined) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+        btn.dataset.active = btn.dataset.langBtn === lang ? 'true' : 'false';
+      });
+    }
+
+    function toggleLang() {
+      setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+    }
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // Initialize language
+    document.addEventListener('DOMContentLoaded', () => {
+      setLanguage(currentLang);
+    });
+  </script>
+</body>
+</html>

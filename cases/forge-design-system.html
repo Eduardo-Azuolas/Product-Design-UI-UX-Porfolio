@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Forge Design System — Biblioteca de componentes para SaaS de gestão de projetos | Case Study" />
+  <title>Forge Design System — Case Study</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── PORTFOLIO TOKENS (espresso dark) ─── */
+    :root {
+      --bg-base:        oklch(15% 0.022 60);
+      --bg-surface:     oklch(20% 0.026 60);
+      --bg-surface-2:   oklch(25% 0.030 60);
+      --accent:         oklch(58% 0.12 148);
+      --accent-muted:   oklch(22% 0.05 148);
+      --text-primary:   oklch(90% 0.010 75);
+      --text-secondary: oklch(66% 0.010 75);
+      --text-muted:     oklch(48% 0.008 75);
+      --border-subtle:  oklch(27% 0.018 60);
+      --font-display:   'Cormorant Garamond', Georgia, serif;
+      --font-body:      'Inter', system-ui, sans-serif;
+      --radius-sm:      6px;
+      --radius-md:      12px;
+      --radius-lg:      20px;
+      --radius-pill:    999px;
+      --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-sm:      0 1px 4px oklch(7% 0.01 60 / 0.5);
+      --shadow-md:      0 4px 16px oklch(7% 0.01 60 / 0.6);
+      --shadow-lg:      0 8px 32px oklch(7% 0.01 60 / 0.7);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    .container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 768px) { .container { padding: 0 32px; } }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 72px;
+      background: transparent; border-bottom: 1px solid transparent;
+      z-index: 1000; transition: all 300ms var(--ease-out);
+      display: flex; align-items: center; padding: 0 20px;
+    }
+    @media (min-width: 768px) { .navbar { padding: 0 32px; } }
+    .navbar.scrolled {
+      background: oklch(15% 0.022 60 / 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom-color: var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; color: var(--text-secondary);
+      text-decoration: none; transition: color 300ms;
+    }
+    .nav-back:hover { color: var(--accent); }
+    .nav-back svg { width: 16px; height: 16px; }
+
+    .lang-toggle {
+      display: flex; align-items: center; gap: 3px; padding: 8px 16px;
+      min-height: 32px; border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle); background: transparent;
+      cursor: pointer; font-family: var(--font-body);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+      color: var(--text-secondary); transition: all 300ms;
+    }
+    .lang-toggle:hover { border-color: var(--border-subtle); color: var(--text-primary); }
+    .lang-divider { opacity: 0.4; margin: 0 2px; }
+    [data-lang-btn] { transition: color 300ms; }
+    [data-lang-btn][data-active="true"] { color: var(--accent); }
+
+    /* ─── HERO ─── */
+    .case-hero {
+      margin-top: 72px;
+      padding: 80px 0 60px;
+      background: linear-gradient(135deg, oklch(58% 0.12 148 / 0.06) 0%, var(--bg-base) 60%);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    @media (min-width: 768px) { .case-hero { padding: 120px 0 80px; } }
+
+    .case-label {
+      display: block; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 12px;
+    }
+    .case-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 300; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.02em;
+    }
+    .case-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text-secondary); max-width: 680px;
+      line-height: 1.65; margin-bottom: 48px;
+    }
+
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px; margin-top: 56px;
+    }
+    .metric-card {
+      padding: 24px 28px; background: var(--bg-surface);
+      border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+      transition: all 300ms var(--ease-out);
+    }
+    .metric-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+    .metric-value {
+      font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 400; color: var(--accent); margin-bottom: 10px;
+    }
+    .metric-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.5; }
+
+    /* ─── SECTION ─── */
+    .section { padding: 80px 0; }
+    @media (min-width: 768px) { .section { padding: 112px 0; } }
+    .section-alt { background: var(--bg-surface); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+
+    .section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: block;
+    }
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      font-weight: 300; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.01em;
+    }
+    .section-sub {
+      font-size: 1.05rem; color: var(--text-secondary);
+      max-width: 680px; line-height: 1.75; margin-bottom: 56px;
+    }
+
+    /* ─── PROBLEM ─── */
+    .problem-grid {
+      display: grid; grid-template-columns: 1fr;
+      gap: 48px; align-items: start;
+    }
+    @media (min-width: 768px) { .problem-grid { grid-template-columns: 1fr 1fr; gap: 64px; } }
+
+    .problem-text p { color: var(--text-secondary); margin-bottom: 20px; line-height: 1.8; }
+    .problem-text p:last-child { margin-bottom: 0; }
+    .problem-text strong { color: var(--text-primary); }
+
+    .insight-box {
+      padding: 24px 28px; background: var(--accent-muted);
+      border: 1px solid oklch(58% 0.12 148 / 0.2);
+      border-radius: var(--radius-md); margin-top: 0;
+    }
+    .insight-box .insight-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: block;
+    }
+    .insight-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; }
+    .insight-box p:last-child { margin-bottom: 0; }
+    .insight-box strong { color: var(--text-primary); }
+
+    /* ─── FORGE CANVAS (light SaaS theme) ─── */
+    .forge-canvas {
+      --ds-bg:           oklch(98.5% 0.003 250);
+      --ds-surface:      oklch(96% 0.005 250);
+      --ds-surface-2:    oklch(93% 0.006 250);
+      --ds-text:         oklch(18% 0.01 265);
+      --ds-text-2:       oklch(42% 0.01 265);
+      --ds-text-muted:   oklch(62% 0.008 265);
+      --ds-border:       oklch(88% 0.008 265);
+      --ds-primary:      oklch(52% 0.20 265);
+      --ds-primary-h:    oklch(47% 0.20 265);
+      --ds-primary-muted:oklch(95% 0.04 265);
+      --ds-danger:       oklch(55% 0.22 25);
+      --ds-danger-muted: oklch(97% 0.02 25);
+      --ds-success:      oklch(50% 0.18 148);
+      --ds-success-muted:oklch(96% 0.02 148);
+      --ds-warning:      oklch(65% 0.18 75);
+      --ds-warning-muted:oklch(97% 0.03 75);
+      --ds-shadow-sm:    0 1px 3px oklch(18% 0.01 265 / 0.08);
+      --ds-shadow-md:    0 4px 12px oklch(18% 0.01 265 / 0.10);
+      --ds-shadow-lg:    0 8px 24px oklch(18% 0.01 265 / 0.12);
+      --ds-font:         'Geist', 'Manrope', system-ui, sans-serif;
+      --ds-font-mono:    'Geist Mono', 'Fira Code', monospace;
+      --ds-r-sm:         4px; --ds-r-md:  8px;
+      --ds-r-lg:         12px; --ds-r-pill: 999px;
+      --ds-ease:         cubic-bezier(0.16, 1, 0.3, 1);
+
+      background: var(--ds-bg);
+      color: var(--ds-text);
+      font-family: var(--ds-font);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* ─── TOKEN SECTION ─── */
+    .token-grid { display: grid; gap: 40px; margin-top: 48px; }
+
+    .token-group-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px;
+    }
+
+    .color-scale {
+      display: flex; gap: 4px; flex-wrap: wrap;
+    }
+    .color-swatch {
+      flex: 1; min-width: 48px; height: 48px;
+      border-radius: 6px; position: relative;
+      display: flex; align-items: flex-end; padding: 4px;
+    }
+    .color-swatch-label {
+      font-size: 9px; font-family: 'Geist Mono', monospace;
+      color: transparent; line-height: 1; font-weight: 500;
+      mix-blend-mode: difference; filter: invert(1);
+    }
+
+    .semantic-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .semantic-chip {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: var(--radius-md);
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      flex: 1; min-width: 160px;
+    }
+    .semantic-dot {
+      width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+    }
+    .semantic-chip-label { font-size: 13px; color: var(--text-secondary); }
+    .semantic-chip-value { font-size: 11px; font-family: 'Geist Mono', monospace; color: var(--text-muted); margin-top: 2px; }
+
+    .type-scale-row {
+      display: flex; align-items: baseline; gap: 16px;
+      padding: 12px 0; border-bottom: 1px solid var(--border-subtle);
+    }
+    .type-scale-row:last-child { border-bottom: none; }
+    .type-meta { width: 120px; flex-shrink: 0; }
+    .type-meta-px { font-size: 12px; color: var(--accent); font-weight: 600; }
+    .type-meta-info { font-size: 11px; color: var(--text-muted); }
+    .type-sample { flex: 1; color: var(--text-primary); }
+
+    .spacing-scale { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+    .spacing-block-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .spacing-block { background: var(--accent); border-radius: 3px; opacity: 0.7; width: 100%; }
+    .spacing-label { font-size: 11px; color: var(--text-muted); font-family: 'Geist Mono', monospace; }
+
+    .radius-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+    .radius-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .radius-box {
+      width: 56px; height: 56px; background: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle);
+    }
+    .radius-label { font-size: 11px; color: var(--text-muted); font-family: 'Geist Mono', monospace; }
+
+    .shadow-row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .shadow-item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .shadow-box {
+      width: 80px; height: 56px; background: var(--bg-surface-2);
+      border-radius: var(--radius-md);
+    }
+
+    /* ─── COMPONENT DEMO LAYOUT ─── */
+    .component-block { margin-top: 48px; }
+    .component-title {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .component-title::after {
+      content: ''; flex: 1; height: 1px; background: var(--border-subtle);
+    }
+
+    .component-demo {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    @media (max-width: 767px) { .component-demo { grid-template-columns: 1fr; } }
+
+    .demo-states {
+      padding: 28px; background: var(--bg-surface-2);
+      border-right: 1px solid var(--border-subtle);
+    }
+    @media (max-width: 767px) {
+      .demo-states { border-right: none; border-bottom: 1px solid var(--border-subtle); }
+    }
+    .demo-context { padding: 28px; background: var(--bg-surface); }
+
+    .demo-states-label, .demo-context-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; display: block;
+    }
+
+    /* ─── FORGE COMPONENT STYLES ─── */
+
+    /* Buttons */
+    .f-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0 14px; height: 36px; border-radius: var(--ds-r-md);
+      font-family: var(--ds-font); font-size: 13px; font-weight: 500;
+      cursor: pointer; border: 1px solid transparent;
+      transition: all 150ms var(--ds-ease);
+      text-decoration: none; white-space: nowrap;
+      position: relative; overflow: hidden;
+    }
+    .f-btn-primary { background: var(--ds-primary); color: #fff; }
+    .f-btn-primary:hover { background: var(--ds-primary-h); transform: translateY(-1px); box-shadow: var(--ds-shadow-md); }
+    .f-btn-secondary {
+      background: var(--ds-surface); color: var(--ds-text);
+      border-color: var(--ds-border);
+    }
+    .f-btn-secondary:hover { background: var(--ds-surface-2); border-color: oklch(80% 0.010 265); }
+    .f-btn-ghost { background: transparent; color: var(--ds-primary); }
+    .f-btn-ghost:hover { background: var(--ds-primary-muted); }
+    .f-btn-danger { background: var(--ds-danger); color: #fff; }
+    .f-btn-danger:hover { background: oklch(50% 0.22 25); transform: translateY(-1px); }
+    .f-btn-sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: var(--ds-r-sm); }
+    .f-btn-lg { height: 44px; padding: 0 20px; font-size: 14px; }
+    .f-btn[disabled], .f-btn.disabled {
+      opacity: 0.4; pointer-events: none; cursor: not-allowed;
+    }
+    .f-btn-loading {
+      color: transparent;
+    }
+    .f-btn-loading::after {
+      content: ''; position: absolute; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 600ms linear infinite;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+    }
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    /* Status Badges */
+    .f-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 8px; border-radius: var(--ds-r-pill);
+      font-size: 11px; font-weight: 500; font-family: var(--ds-font);
+      white-space: nowrap;
+    }
+    .f-badge svg { width: 11px; height: 11px; flex-shrink: 0; }
+    .f-badge-todo { background: var(--ds-surface-2); color: var(--ds-text-2); border: 1px solid var(--ds-border); }
+    .f-badge-progress { background: oklch(95% 0.04 265); color: var(--ds-primary); border: 1px solid oklch(88% 0.06 265); }
+    .f-badge-done { background: var(--ds-success-muted); color: var(--ds-success); border: 1px solid oklch(88% 0.04 148); }
+    .f-badge-blocked { background: var(--ds-danger-muted); color: var(--ds-danger); border: 1px solid oklch(90% 0.06 25); }
+    .f-badge-warning { background: var(--ds-warning-muted); color: var(--ds-warning); border: 1px solid oklch(90% 0.06 75); }
+
+    /* Priority */
+    .f-priority {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 500; font-family: var(--ds-font);
+    }
+    .f-priority svg { width: 12px; height: 12px; }
+    .f-prio-critical { color: var(--ds-danger); }
+    .f-prio-high { color: var(--ds-warning); }
+    .f-prio-medium { color: var(--ds-text-2); }
+    .f-prio-low { color: var(--ds-text-muted); }
+
+    /* Input */
+    .f-field { display: flex; flex-direction: column; gap: 5px; }
+    .f-label {
+      font-size: 12px; font-weight: 500; color: var(--ds-text-2);
+      font-family: var(--ds-font);
+    }
+    .f-input {
+      height: 36px; padding: 0 12px; border-radius: var(--ds-r-md);
+      border: 1px solid var(--ds-border); background: var(--ds-bg);
+      color: var(--ds-text); font-family: var(--ds-font); font-size: 13px;
+      outline: none; transition: all 150ms var(--ds-ease); width: 100%;
+    }
+    .f-input::placeholder { color: var(--ds-text-muted); }
+    .f-input:focus { border-color: var(--ds-primary); box-shadow: 0 0 0 3px oklch(52% 0.20 265 / 0.12); }
+    .f-input.error { border-color: var(--ds-danger); box-shadow: 0 0 0 3px oklch(55% 0.22 25 / 0.10); }
+    .f-input[disabled] { opacity: 0.5; background: var(--ds-surface-2); cursor: not-allowed; }
+    .f-helper { font-size: 11px; color: var(--ds-text-muted); font-family: var(--ds-font); }
+    .f-helper.error { color: var(--ds-danger); }
+
+    /* Toggle */
+    .f-toggle-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .f-toggle {
+      width: 36px; height: 20px; border-radius: var(--ds-r-pill);
+      background: var(--ds-border); position: relative;
+      transition: background 150ms var(--ds-ease); flex-shrink: 0;
+      cursor: pointer; border: none;
+    }
+    .f-toggle::after {
+      content: ''; position: absolute; width: 14px; height: 14px;
+      background: white; border-radius: 50%; top: 3px; left: 3px;
+      transition: transform 150ms var(--ds-ease);
+      box-shadow: 0 1px 3px oklch(0% 0 0 / 0.2);
+    }
+    .f-toggle.on { background: var(--ds-primary); }
+    .f-toggle.on::after { transform: translateX(16px); }
+    .f-toggle-label { font-size: 13px; color: var(--ds-text-2); font-family: var(--ds-font); }
+
+    /* Checkbox */
+    .f-checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .f-checkbox {
+      width: 16px; height: 16px; border-radius: 4px;
+      border: 1.5px solid var(--ds-border); background: var(--ds-bg);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: all 150ms var(--ds-ease);
+    }
+    .f-checkbox.checked { background: var(--ds-primary); border-color: var(--ds-primary); }
+    .f-checkbox.checked svg { display: block; }
+    .f-checkbox.indeterminate { background: var(--ds-primary); border-color: var(--ds-primary); }
+    .f-checkbox svg { width: 10px; height: 10px; color: white; display: none; }
+    .f-checkbox-label { font-size: 13px; color: var(--ds-text); font-family: var(--ds-font); }
+
+    /* Avatar */
+    .f-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; font-family: var(--ds-font);
+      flex-shrink: 0; overflow: hidden; border: 2px solid var(--ds-bg);
+    }
+    .f-avatar-sm { width: 24px; height: 24px; font-size: 10px; }
+    .f-avatar-lg { width: 40px; height: 40px; font-size: 14px; }
+    .f-avatar-stack { display: flex; }
+    .f-avatar-stack .f-avatar { margin-left: -8px; }
+    .f-avatar-stack .f-avatar:first-child { margin-left: 0; }
+
+    .av-indigo { background: oklch(85% 0.06 265); color: var(--ds-primary); }
+    .av-amber  { background: oklch(90% 0.06 75);  color: var(--ds-warning); }
+    .av-green  { background: oklch(90% 0.05 148); color: var(--ds-success); }
+    .av-rose   { background: oklch(92% 0.04 25);  color: var(--ds-danger); }
+
+    /* Tag / Chip */
+    .f-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: var(--ds-r-pill);
+      font-size: 12px; font-weight: 500; font-family: var(--ds-font);
+      background: var(--ds-surface-2); color: var(--ds-text-2);
+      border: 1px solid var(--ds-border);
+    }
+    .f-tag svg { width: 10px; height: 10px; cursor: pointer; color: var(--ds-text-muted); }
+    .f-tag-primary { background: var(--ds-primary-muted); color: var(--ds-primary); border-color: oklch(88% 0.06 265); }
+
+    /* Task Card */
+    .f-task-card {
+      background: var(--ds-bg); border: 1px solid var(--ds-border);
+      border-radius: var(--ds-r-lg); padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: all 150ms var(--ds-ease); cursor: pointer;
+      box-shadow: var(--ds-shadow-sm);
+    }
+    .f-task-card:hover { border-color: oklch(80% 0.012 265); box-shadow: var(--ds-shadow-md); transform: translateY(-1px); }
+    .f-task-title { font-size: 13px; font-weight: 500; color: var(--ds-text); line-height: 1.4; font-family: var(--ds-font); }
+    .f-task-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .f-task-footer { display: flex; align-items: center; justify-content: space-between; }
+    .f-task-due { font-size: 11px; color: var(--ds-text-muted); font-family: var(--ds-font); display: flex; align-items: center; gap: 4px; }
+    .f-task-due svg { width: 11px; height: 11px; }
+
+    /* Alert / Banner */
+    .f-alert {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: var(--ds-r-md);
+      font-family: var(--ds-font); font-size: 13px;
+      border: 1px solid transparent;
+    }
+    .f-alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+    .f-alert-body { flex: 1; }
+    .f-alert-title { font-weight: 600; margin-bottom: 2px; }
+    .f-alert-msg { color: var(--ds-text-2); line-height: 1.5; }
+    .f-alert-info    { background: var(--ds-primary-muted); color: var(--ds-primary); border-color: oklch(88% 0.06 265); }
+    .f-alert-info .f-alert-msg { color: oklch(42% 0.12 265); }
+    .f-alert-success { background: var(--ds-success-muted); color: var(--ds-success); border-color: oklch(88% 0.04 148); }
+    .f-alert-success .f-alert-msg { color: oklch(38% 0.12 148); }
+    .f-alert-warning { background: var(--ds-warning-muted); color: var(--ds-warning); border-color: oklch(88% 0.06 75); }
+    .f-alert-warning .f-alert-msg { color: oklch(48% 0.14 75); }
+    .f-alert-error   { background: var(--ds-danger-muted); color: var(--ds-danger); border-color: oklch(90% 0.06 25); }
+    .f-alert-error .f-alert-msg { color: oklch(42% 0.14 25); }
+
+    /* Table Row */
+    .f-table { width: 100%; border-collapse: collapse; font-family: var(--ds-font); }
+    .f-table th {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--ds-text-muted);
+      padding: 10px 14px; text-align: left;
+      border-bottom: 1px solid var(--ds-border); background: var(--ds-surface);
+    }
+    .f-table td {
+      padding: 12px 14px; border-bottom: 1px solid var(--ds-surface-2);
+      font-size: 13px; color: var(--ds-text-2); vertical-align: middle;
+    }
+    .f-table tr:hover td { background: oklch(97% 0.003 250); }
+    .f-table tr:last-child td { border-bottom: none; }
+    .f-table-name { color: var(--ds-text); font-weight: 500; }
+
+    /* Sidebar Nav */
+    .f-sidebar {
+      background: var(--ds-surface); border-right: 1px solid var(--ds-border);
+      padding: 16px 12px; font-family: var(--ds-font); min-width: 200px;
+    }
+    .f-sidebar-group-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ds-text-muted);
+      padding: 4px 8px; margin: 12px 0 4px;
+    }
+    .f-nav-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 8px; border-radius: var(--ds-r-md);
+      font-size: 13px; color: var(--ds-text-2);
+      cursor: pointer; transition: all 150ms var(--ds-ease);
+      position: relative;
+    }
+    .f-nav-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--ds-text-muted); }
+    .f-nav-item:hover { background: var(--ds-surface-2); color: var(--ds-text); }
+    .f-nav-item.active {
+      background: var(--ds-primary-muted); color: var(--ds-primary); font-weight: 500;
+    }
+    .f-nav-item.active svg { color: var(--ds-primary); }
+    .f-nav-badge {
+      margin-left: auto; font-size: 11px; font-weight: 600;
+      background: var(--ds-danger); color: white;
+      padding: 1px 6px; border-radius: var(--ds-r-pill); min-width: 18px; text-align: center;
+    }
+    .f-nav-badge.muted {
+      background: var(--ds-surface-2); color: var(--ds-text-muted);
+    }
+
+    /* Modal */
+    .f-modal-frame {
+      background: var(--ds-bg); border: 1px solid var(--ds-border);
+      border-radius: var(--ds-r-lg); overflow: hidden; box-shadow: var(--ds-shadow-lg);
+      max-width: 480px;
+    }
+    .f-modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--ds-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .f-modal-title { font-size: 15px; font-weight: 600; color: var(--ds-text); font-family: var(--ds-font); }
+    .f-modal-close {
+      width: 28px; height: 28px; border-radius: var(--ds-r-md);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ds-text-muted); cursor: pointer;
+      transition: all 150ms var(--ds-ease); background: transparent; border: none;
+    }
+    .f-modal-close:hover { background: var(--ds-surface-2); color: var(--ds-text); }
+    .f-modal-body { padding: 20px 24px; }
+    .f-modal-footer {
+      padding: 16px 24px; border-top: 1px solid var(--ds-border);
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+
+    /* ─── COMPONENT LAYOUT HELPERS ─── */
+    .flex-col { display: flex; flex-direction: column; }
+    .flex-row { display: flex; flex-direction: row; align-items: center; }
+    .gap-4  { gap: 4px; }  .gap-6  { gap: 6px; }
+    .gap-8  { gap: 8px; }  .gap-12 { gap: 12px; }
+    .gap-16 { gap: 16px; } .gap-20 { gap: 20px; }
+    .gap-24 { gap: 24px; }
+    .w-full { width: 100%; }
+
+    /* ─── COMPOSITION SCREENS ─── */
+    .composition-block { margin-top: 48px; }
+    .composition-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .composition-label::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
+
+    /* Board View */
+    .board-view {
+      border-radius: var(--radius-lg); overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+    .board-topbar {
+      height: 52px; background: var(--ds-bg);
+      border-bottom: 1px solid var(--ds-border);
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px;
+      font-family: var(--ds-font);
+    }
+    .board-topbar-left { display: flex; align-items: center; gap: 16px; }
+    .board-page-title { font-size: 14px; font-weight: 600; color: var(--ds-text); }
+    .board-filter-group { display: flex; gap: 6px; }
+    .board-filter {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: var(--ds-r-pill);
+      font-size: 12px; color: var(--ds-text-2);
+      border: 1px solid var(--ds-border); background: var(--ds-surface);
+      cursor: pointer; font-family: var(--ds-font);
+    }
+    .board-filter svg { width: 11px; height: 11px; }
+
+    .board-columns {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; background: var(--ds-surface-2);
+    }
+    @media (max-width: 767px) { .board-columns { grid-template-columns: 1fr; } }
+
+    .board-col {
+      background: var(--ds-surface-2);
+      padding: 14px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .board-col + .board-col { border-left: 1px solid var(--ds-border); }
+    @media (max-width: 767px) { .board-col + .board-col { border-left: none; border-top: 1px solid var(--ds-border); } }
+
+    .board-col-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 2px 10px; margin-bottom: 2px;
+    }
+    .board-col-title-group { display: flex; align-items: center; gap: 8px; }
+    .board-col-title { font-size: 12px; font-weight: 600; color: var(--ds-text-2); font-family: var(--ds-font); }
+    .board-col-count {
+      font-size: 11px; font-weight: 600; padding: 1px 7px;
+      border-radius: var(--ds-r-pill); background: var(--ds-surface);
+      color: var(--ds-text-muted); font-family: var(--ds-font);
+    }
+    .board-add-btn {
+      width: 24px; height: 24px; border-radius: var(--ds-r-sm);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ds-text-muted); cursor: pointer; border: none;
+      background: transparent; transition: all 150ms;
+    }
+    .board-add-btn:hover { background: var(--ds-surface); color: var(--ds-text); }
+    .board-add-btn svg { width: 14px; height: 14px; }
+
+    /* Task Detail */
+    .detail-view {
+      display: grid; grid-template-columns: 1fr 320px;
+      border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+      overflow: hidden; background: var(--ds-bg); font-family: var(--ds-font);
+    }
+    @media (max-width: 767px) { .detail-view { grid-template-columns: 1fr; } }
+    .detail-main { padding: 28px; border-right: 1px solid var(--ds-border); }
+    @media (max-width: 767px) { .detail-main { border-right: none; border-bottom: 1px solid var(--ds-border); } }
+    .detail-sidebar { padding: 24px; background: var(--ds-surface); }
+    .detail-task-title {
+      font-size: 20px; font-weight: 600; color: var(--ds-text);
+      margin-bottom: 16px; line-height: 1.3;
+    }
+    .detail-desc {
+      font-size: 13px; color: var(--ds-text-2); line-height: 1.75;
+      margin-bottom: 24px;
+    }
+    .detail-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ds-text-muted);
+      margin-bottom: 12px; display: block;
+    }
+    .detail-field { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .detail-field-label { font-size: 12px; color: var(--ds-text-muted); }
+    .detail-field-value { font-size: 13px; color: var(--ds-text-2); font-weight: 500; }
+    .detail-footer {
+      display: flex; align-items: center; gap: 8px;
+      padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--ds-border);
+    }
+
+    /* Empty State */
+    .empty-state {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 64px 32px; text-align: center;
+      background: var(--ds-bg); border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--ds-font);
+    }
+    .empty-icon {
+      width: 72px; height: 72px; background: var(--ds-surface-2);
+      border-radius: 20px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; color: var(--ds-text-muted);
+    }
+    .empty-icon svg { width: 32px; height: 32px; }
+    .empty-title { font-size: 18px; font-weight: 600; color: var(--ds-text); margin-bottom: 8px; }
+    .empty-desc { font-size: 14px; color: var(--ds-text-muted); max-width: 300px; line-height: 1.6; margin-bottom: 24px; }
+
+    /* ─── RESULTS ─── */
+    .results-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px; margin-top: 48px;
+    }
+    .result-card {
+      padding: 28px; background: var(--bg-surface);
+      border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+      transition: all 300ms var(--ease-out);
+    }
+    .result-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .result-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .result-stat { font-family: var(--font-display); font-size: 2rem; font-weight: 400; color: var(--text-primary); margin-bottom: 8px; line-height: 1; }
+    .result-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ─── CTA ─── */
+    .cta-section { text-align: center; padding: 100px 0; border-top: 1px solid var(--border-subtle); }
+    .cta-section h2 { font-family: var(--font-display); font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 24px; }
+    .cta-section p { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 40px; max-width: 540px; margin-left: auto; margin-right: auto; }
+    .cta-buttons { display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; }
+    @media (min-width: 480px) { .cta-buttons { flex-direction: row; } }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: var(--radius-pill);
+      text-decoration: none; font-size: 14px; font-weight: 500;
+      transition: all 300ms var(--ease-out); border: none; cursor: pointer;
+    }
+    .btn-primary { background: var(--accent); color: var(--bg-base); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    .btn-secondary:hover { background: var(--accent-muted); }
+
+    /* ─── FOOTER ─── */
+    .footer { border-top: 1px solid var(--border-subtle); padding: 60px 0; text-align: center; color: var(--text-secondary); font-size: 14px; }
+    .footer a { color: var(--accent); text-decoration: none; transition: color 300ms; }
+    .footer a:hover { color: var(--text-primary); }
+
+    /* ─── MISC HELPERS ─── */
+    .mt-8  { margin-top: 8px; }  .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; } .mt-20 { margin-top: 20px; }
+    .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; }
+    .p-16 { padding: 16px; } .p-20 { padding: 20px; } .p-24 { padding: 24px; }
+    .forge-section-bg { background: var(--ds-surface-2); padding: 28px; border-radius: var(--radius-md); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-back" aria-label="Voltar ao portfólio" data-i18n="nav.back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 19l-7-7 7-7"/></svg>
+    <span>← Voltar</span>
+  </a>
+  <button class="lang-toggle" type="button" onclick="toggleLang()" aria-label="Alternar idioma">
+    <span data-lang-btn="pt" data-active="true">PT</span>
+    <span class="lang-divider">/</span>
+    <span data-lang-btn="en" data-active="false">EN</span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="case-hero">
+  <div class="container">
+    <span class="case-label" data-i18n="case.label">Design System · B2B SaaS · 2025</span>
+    <h1 class="case-title">Forge Design System</h1>
+    <p class="case-tagline">Uma linguagem compartilhada para times que entregam em velocidade. Como construímos o sistema de componentes do Forge — e por que a decisão mais importante foi antes do primeiro pixel.</p>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">68</div>
+        <div class="metric-label">Componentes documentados</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">−60%</div>
+        <div class="metric-label">Tempo de handoff por componente</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">12</div>
+        <div class="metric-label">Times adotando o sistema</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">−71%</div>
+        <div class="metric-label">Inconsistências em QA</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMA -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="section-label" data-i18n="section.problem">O Problema</span>
+    <h2 class="section-heading" data-i18n="section.problem.heading">Escala sem sistema é caos com logo bonito</h2>
+    <p class="section-sub">O Forge era um app de gestão de projetos com 4 times de produto e nenhuma linguagem compartilhada. O resultado aparecia todo sprint.</p>
+
+    <div class="problem-grid">
+      <div class="problem-text">
+        <p><strong>Cada time reinventava a roda.</strong> Um botão primário tinha 7 variações em produção. Inputs com 4 alturas diferentes. Cards com 3 estilos de sombra. Nada estava errado individualmente — o problema era sistêmico.</p>
+        <p>O custo não era visual. Era de velocidade. Designers gastavam 40% do tempo replicando componentes em vez de resolver problemas. Devs questionavam qual versão implementar. QA reportava inconsistências que ninguém sabia de onde vieram.</p>
+        <p><strong>A solução não era "deixar bonito."</strong> Era criar uma única fonte de verdade que qualquer time pudesse usar, estender e confiar.</p>
+      </div>
+
+      <div class="flex-col gap-16">
+        <div class="insight-box">
+          <span class="insight-label">Pesquisa interna — sprint audit</span>
+          <p><strong>12 variações</strong> de button primário encontradas em produção antes do sistema</p>
+          <p><strong>40%</strong> do tempo de design gasto replicando componentes existentes</p>
+          <p><strong>3.1h</strong> tempo médio de handoff por componente novo</p>
+        </div>
+        <div class="insight-box">
+          <span class="insight-label">Impacto em QA</span>
+          <p><strong>68%</strong> dos bugs visuais reportados eram inconsistências de componentes</p>
+          <p><strong>2–3 ciclos</strong> extras de revisão por entrega com inconsistência</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOKEN FOUNDATION -->
+<section class="section">
+  <div class="container">
+    <span class="section-label" data-i18n="section.tokens">Token Foundation</span>
+    <h2 class="section-heading" data-i18n="section.tokens.heading">Tudo começa antes do componente</h2>
+    <p class="section-sub">Tokens são o contrato entre design e código. Antes de construir qualquer componente, definimos os valores primitivos que governam toda decisão visual.</p>
+
+    <div class="token-grid">
+
+      <!-- Color -->
+      <div>
+        <div class="token-group-label">Escala de cor — Primary (Indigo)</div>
+        <div class="forge-canvas p-20">
+          <div class="color-scale">
+            <div class="color-swatch" style="background: oklch(97% 0.01 265);"><span class="color-swatch-label">50</span></div>
+            <div class="color-swatch" style="background: oklch(93% 0.03 265);"><span class="color-swatch-label">100</span></div>
+            <div class="color-swatch" style="background: oklch(87% 0.07 265);"><span class="color-swatch-label">200</span></div>
+            <div class="color-swatch" style="background: oklch(78% 0.12 265);"><span class="color-swatch-label">300</span></div>
+            <div class="color-swatch" style="background: oklch(68% 0.17 265);"><span class="color-swatch-label">400</span></div>
+            <div class="color-swatch" style="background: oklch(57% 0.20 265);"><span class="color-swatch-label">500</span></div>
+            <div class="color-swatch" style="background: oklch(52% 0.20 265);"><span class="color-swatch-label">600</span></div>
+            <div class="color-swatch" style="background: oklch(44% 0.19 265);"><span class="color-swatch-label">700</span></div>
+            <div class="color-swatch" style="background: oklch(35% 0.16 265);"><span class="color-swatch-label">800</span></div>
+            <div class="color-swatch" style="background: oklch(26% 0.12 265);"><span class="color-swatch-label">900</span></div>
+          </div>
+        </div>
+
+        <div class="token-group-label mt-24">Semantic — Papéis funcionais</div>
+        <div class="semantic-row">
+          <div class="semantic-chip">
+            <div class="semantic-dot" style="background: oklch(52% 0.20 265);"></div>
+            <div><div class="semantic-chip-label">Primary</div><div class="semantic-chip-value">oklch(52% .20 265)</div></div>
+          </div>
+          <div class="semantic-chip">
+            <div class="semantic-dot" style="background: oklch(50% 0.18 148);"></div>
+            <div><div class="semantic-chip-label">Success</div><div class="semantic-chip-value">oklch(50% .18 148)</div></div>
+          </div>
+          <div class="semantic-chip">
+            <div class="semantic-dot" style="background: oklch(55% 0.22 25);"></div>
+            <div><div class="semantic-chip-label">Danger</div><div class="semantic-chip-value">oklch(55% .22 25)</div></div>
+          </div>
+          <div class="semantic-chip">
+            <div class="semantic-dot" style="background: oklch(65% 0.18 75);"></div>
+            <div><div class="semantic-chip-label">Warning</div><div class="semantic-chip-value">oklch(65% .18 75)</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Type Scale -->
+      <div>
+        <div class="token-group-label">Escala tipográfica — Geist Sans</div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; padding: 4px 20px;">
+          <div class="type-scale-row">
+            <div class="type-meta"><div class="type-meta-px">32px / 700</div><div class="type-meta-info">Display</div></div>
+            <div class="type-sample" style="font-size: 28px; font-weight: 700; font-family: 'Geist', system-ui; color: var(--text-primary);">Forge</div>
+          </div>
+          <div class="type-scale-row">
+            <div class="type-meta"><div class="type-meta-px">20px / 600</div><div class="type-meta-info">Heading</div></div>
+            <div class="type-sample" style="font-size: 18px; font-weight: 600; font-family: 'Geist', system-ui; color: var(--text-primary);">Redesenhar onboarding</div>
+          </div>
+          <div class="type-scale-row">
+            <div class="type-meta"><div class="type-meta-px">15px / 400</div><div class="type-meta-info">Body</div></div>
+            <div class="type-sample" style="font-size: 14px; font-weight: 400; font-family: 'Geist', system-ui; color: var(--text-secondary);">Componentes construídos sobre tokens primitivos.</div>
+          </div>
+          <div class="type-scale-row">
+            <div class="type-meta"><div class="type-meta-px">12px / 500</div><div class="type-meta-info">Label</div></div>
+            <div class="type-sample" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Geist', system-ui; color: var(--text-muted);">STATUS · PRIORIDADE</div>
+          </div>
+          <div class="type-scale-row">
+            <div class="type-meta"><div class="type-meta-px">13px / 400</div><div class="type-meta-info">Mono</div></div>
+            <div class="type-sample" style="font-size: 13px; font-family: 'Geist Mono', monospace; color: var(--accent);">--ds-primary: oklch(52% .20 265)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spacing + Radius -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+        <div>
+          <div class="token-group-label">Espaçamento (base 4px)</div>
+          <div class="spacing-scale" style="align-items: flex-end; gap: 10px;">
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 24px; height: 4px;"></div><div class="spacing-label">4</div></div>
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 24px; height: 8px;"></div><div class="spacing-label">8</div></div>
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 28px; height: 16px;"></div><div class="spacing-label">16</div></div>
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 32px; height: 24px;"></div><div class="spacing-label">24</div></div>
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 36px; height: 32px;"></div><div class="spacing-label">32</div></div>
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 40px; height: 48px;"></div><div class="spacing-label">48</div></div>
+            <div class="spacing-block-wrap"><div class="spacing-block" style="width: 44px; height: 64px;"></div><div class="spacing-label">64</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="token-group-label">Border radius</div>
+          <div class="radius-row">
+            <div class="radius-item"><div class="radius-box" style="border-radius: 4px;"></div><div class="radius-label">sm 4</div></div>
+            <div class="radius-item"><div class="radius-box" style="border-radius: 8px;"></div><div class="radius-label">md 8</div></div>
+            <div class="radius-item"><div class="radius-box" style="border-radius: 12px;"></div><div class="radius-label">lg 12</div></div>
+            <div class="radius-item"><div class="radius-box" style="border-radius: 999px; width: 56px;"></div><div class="radius-label">pill</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ATOMIC COMPONENTS -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="section-label" data-i18n="section.atomic">Componentes Atômicos</span>
+    <h2 class="section-heading" data-i18n="section.atomic.heading">Primitivos que compõem tudo</h2>
+    <p class="section-sub">Cada componente documenta todos os estados. À esquerda, os estados isolados. À direita, o componente em uso real dentro do produto.</p>
+
+    <!-- Button -->
+    <div class="component-block">
+      <div class="component-title">01 — Button</div>
+      <div class="component-demo">
+        <div class="demo-states forge-canvas">
+          <span class="demo-states-label">Estados</span>
+          <div class="flex-col gap-12">
+            <div class="flex-row gap-8 flex-wrap">
+              <button class="f-btn f-btn-primary">Salvar</button>
+              <button class="f-btn f-btn-secondary">Cancelar</button>
+              <button class="f-btn f-btn-ghost">Ver detalhes</button>
+              <button class="f-btn f-btn-danger">Excluir</button>
+            </div>
+            <div class="flex-row gap-8 flex-wrap">
+              <button class="f-btn f-btn-primary f-btn-sm">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                Nova task
+              </button>
+              <button class="f-btn f-btn-secondary f-btn-sm">Filtrar</button>
+              <button class="f-btn f-btn-primary f-btn-lg">Publicar sprint</button>
+            </div>
+            <div class="flex-row gap-8 flex-wrap">
+              <button class="f-btn f-btn-primary disabled" aria-disabled="true">Salvar</button>
+              <button class="f-btn f-btn-primary f-btn-loading" aria-label="Salvando...">Salvar</button>
+              <button class="f-btn f-btn-secondary disabled" aria-disabled="true">Secundário</button>
+            </div>
+          </div>
+        </div>
+        <div class="demo-context forge-canvas">
+          <span class="demo-context-label">Em contexto — criação de task</span>
+          <div class="flex-col gap-12">
+            <div class="f-field">
+              <label class="f-label">Título da task</label>
+              <input class="f-input" type="text" value="Redesenhar tela de onboarding" />
+            </div>
+            <div class="f-field">
+              <label class="f-label">Descrição</label>
+              <input class="f-input" type="text" placeholder="Adicionar descrição..." />
+            </div>
+            <div class="flex-row gap-8 mt-8">
+              <button class="f-btn f-btn-primary">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                Criar task
+              </button>
+              <button class="f-btn f-btn-secondary">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Badges -->
+    <div class="component-block">
+      <div class="component-title">02 — Status Badge</div>
+      <div class="component-demo">
+        <div class="demo-states forge-canvas">
+          <span class="demo-states-label">Variações de status</span>
+          <div class="flex-col gap-12">
+            <div class="flex-row gap-8 flex-wrap">
+              <span class="f-badge f-badge-todo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+                Todo
+              </span>
+              <span class="f-badge f-badge-progress">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-dasharray="28 56"/></svg>
+                In Progress
+              </span>
+              <span class="f-badge f-badge-done">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                Done
+              </span>
+              <span class="f-badge f-badge-blocked">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Blocked
+              </span>
+            </div>
+            <div class="flex-row gap-8 flex-wrap">
+              <span class="f-badge f-badge-warning">Em revisão</span>
+              <span class="f-badge f-badge-todo">Backlog</span>
+              <span class="f-badge f-badge-progress">Em teste</span>
+            </div>
+            <div style="margin-top: 12px;">
+              <div class="token-group-label" style="margin-bottom: 8px;">Priority</div>
+              <div class="flex-row gap-12">
+                <span class="f-priority f-prio-critical">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                  Critical
+                </span>
+                <span class="f-priority f-prio-high">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  High
+                </span>
+                <span class="f-priority f-prio-medium">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14"/></svg>
+                  Medium
+                </span>
+                <span class="f-priority f-prio-low">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                  Low
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-context forge-canvas">
+          <span class="demo-context-label">Em contexto — coluna kanban</span>
+          <div class="flex-col gap-8">
+            <div class="f-task-card">
+              <div class="f-task-title">Redesenhar tela de onboarding</div>
+              <div class="f-task-meta">
+                <span class="f-badge f-badge-progress">In Progress</span>
+                <span class="f-priority f-prio-high"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>High</span>
+              </div>
+              <div class="f-task-footer">
+                <div class="f-avatar f-avatar-sm av-indigo" aria-label="João S.">JS</div>
+                <span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>15 Mai</span>
+              </div>
+            </div>
+            <div class="f-task-card">
+              <div class="f-task-title">Auditoria de acessibilidade — componentes de form</div>
+              <div class="f-task-meta">
+                <span class="f-badge f-badge-todo">Todo</span>
+                <span class="f-priority f-prio-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px" aria-hidden="true"><path d="M5 12h14"/></svg>Medium</span>
+              </div>
+              <div class="f-task-footer">
+                <div class="f-avatar f-avatar-sm av-amber" aria-label="Ana M.">AM</div>
+                <span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>22 Mai</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="component-block">
+      <div class="component-title">03 — Input Field</div>
+      <div class="component-demo">
+        <div class="demo-states forge-canvas">
+          <span class="demo-states-label">Estados</span>
+          <div class="flex-col gap-16">
+            <div class="f-field">
+              <label class="f-label">Default</label>
+              <input class="f-input" type="text" placeholder="Pesquisar tasks..." />
+            </div>
+            <div class="f-field">
+              <label class="f-label">Focus (ativo)</label>
+              <input class="f-input" type="text" value="Redesenhar onboarding" style="border-color: oklch(52% 0.20 265); box-shadow: 0 0 0 3px oklch(52% 0.20 265 / 0.12);" />
+            </div>
+            <div class="f-field">
+              <label class="f-label">Error</label>
+              <input class="f-input error" type="text" value="" placeholder="Campo obrigatório" />
+              <span class="f-helper error">O título é obrigatório.</span>
+            </div>
+            <div class="f-field">
+              <label class="f-label" style="opacity: 0.5;">Disabled</label>
+              <input class="f-input" type="text" value="Apenas leitura" disabled />
+            </div>
+          </div>
+        </div>
+        <div class="demo-context forge-canvas">
+          <span class="demo-context-label">Em contexto — filtro de board</span>
+          <div class="flex-col gap-12">
+            <div class="f-field">
+              <label class="f-label">Buscar tasks</label>
+              <input class="f-input" type="search" placeholder="Ex: onboarding, sprint 12..." />
+            </div>
+            <div class="flex-row gap-8">
+              <div class="f-field w-full">
+                <label class="f-label">Responsável</label>
+                <select class="f-input" style="appearance:none; cursor:pointer;">
+                  <option>Todos os membros</option>
+                  <option>João Silva</option>
+                  <option>Ana Melo</option>
+                </select>
+              </div>
+              <div class="f-field w-full">
+                <label class="f-label">Status</label>
+                <select class="f-input" style="appearance:none; cursor:pointer;">
+                  <option>Todos</option>
+                  <option>In Progress</option>
+                  <option>Done</option>
+                </select>
+              </div>
+            </div>
+            <button class="f-btn f-btn-primary" style="align-self: flex-start;">Aplicar filtros</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toggle + Checkbox -->
+    <div class="component-block">
+      <div class="component-title">04 — Toggle &amp; Checkbox</div>
+      <div class="component-demo">
+        <div class="demo-states forge-canvas">
+          <span class="demo-states-label">Estados</span>
+          <div class="flex-col gap-20">
+            <div>
+              <div class="f-helper" style="margin-bottom: 10px; color: var(--ds-text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;">Toggle</div>
+              <div class="flex-col gap-10">
+                <div class="f-toggle-wrap"><button class="f-toggle on" aria-checked="true" role="switch"></button><span class="f-toggle-label">Notificações ativas</span></div>
+                <div class="f-toggle-wrap"><button class="f-toggle" aria-checked="false" role="switch"></button><span class="f-toggle-label">Modo compacto</span></div>
+                <div class="f-toggle-wrap" style="opacity: 0.4;"><button class="f-toggle on" disabled></button><span class="f-toggle-label">Desativado</span></div>
+              </div>
+            </div>
+            <div>
+              <div class="f-helper" style="margin-bottom: 10px; color: var(--ds-text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;">Checkbox</div>
+              <div class="flex-col gap-10">
+                <div class="f-checkbox-wrap">
+                  <div class="f-checkbox checked" role="checkbox" aria-checked="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                  </div>
+                  <span class="f-checkbox-label">Concluído</span>
+                </div>
+                <div class="f-checkbox-wrap">
+                  <div class="f-checkbox" role="checkbox" aria-checked="false"></div>
+                  <span class="f-checkbox-label">Pendente</span>
+                </div>
+                <div class="f-checkbox-wrap" style="opacity: 0.4;">
+                  <div class="f-checkbox" role="checkbox" aria-disabled="true"></div>
+                  <span class="f-checkbox-label">Desativado</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-context forge-canvas">
+          <span class="demo-context-label">Em contexto — configurações de projeto</span>
+          <div class="flex-col gap-16">
+            <div style="font-size: 14px; font-weight: 600; color: var(--ds-text);">Notificações do projeto</div>
+            <div class="flex-col gap-12">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--ds-border);">
+                <div><div style="font-size: 13px; color: var(--ds-text);">Novas tasks atribuídas a mim</div><div style="font-size: 12px; color: var(--ds-text-muted);">Receba por email e push</div></div>
+                <button class="f-toggle on" aria-checked="true" role="switch" aria-label="Novas tasks atribuídas"></button>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--ds-border);">
+                <div><div style="font-size: 13px; color: var(--ds-text);">Comentários em tasks</div><div style="font-size: 12px; color: var(--ds-text-muted);">Menções e respostas</div></div>
+                <button class="f-toggle on" aria-checked="true" role="switch" aria-label="Comentários"></button>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                <div><div style="font-size: 13px; color: var(--ds-text);">Relatórios semanais</div><div style="font-size: 12px; color: var(--ds-text-muted);">Resumo toda segunda às 9h</div></div>
+                <button class="f-toggle" aria-checked="false" role="switch" aria-label="Relatórios"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avatar + Tag -->
+    <div class="component-block">
+      <div class="component-title">05 — Avatar &amp; Tag</div>
+      <div class="component-demo">
+        <div class="demo-states forge-canvas">
+          <span class="demo-states-label">Variações</span>
+          <div class="flex-col gap-20">
+            <div>
+              <div class="f-helper" style="margin-bottom: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ds-text-muted);">Avatar</div>
+              <div class="flex-row gap-12 flex-wrap">
+                <div class="f-avatar av-indigo" aria-label="João Silva">JS</div>
+                <div class="f-avatar av-amber" aria-label="Ana Melo">AM</div>
+                <div class="f-avatar av-green" aria-label="Pedro Costa">PC</div>
+                <div class="f-avatar av-rose" aria-label="Luisa Rocha">LR</div>
+                <div class="f-avatar-stack" aria-label="Equipe: João, Ana, Pedro, +2">
+                  <div class="f-avatar f-avatar-sm av-indigo">JS</div>
+                  <div class="f-avatar f-avatar-sm av-amber">AM</div>
+                  <div class="f-avatar f-avatar-sm av-green">PC</div>
+                  <div class="f-avatar f-avatar-sm" style="background: var(--ds-surface-2); color: var(--ds-text-muted); border: 2px solid var(--ds-bg); font-size: 9px;">+2</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="f-helper" style="margin-bottom: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ds-text-muted);">Tag / Chip</div>
+              <div class="flex-row gap-6 flex-wrap">
+                <span class="f-tag">Design</span>
+                <span class="f-tag f-tag-primary">Sprint 12</span>
+                <span class="f-tag">
+                  Frontend
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </span>
+                <span class="f-tag f-tag-primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px" aria-hidden="true"><path d="M7 7h10v10M7 17L17 7"/></svg>
+                  Prioritário
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-context forge-canvas">
+          <span class="demo-context-label">Em contexto — membros do projeto</span>
+          <div class="flex-col gap-12">
+            <div style="font-size: 13px; font-weight: 600; color: var(--ds-text); margin-bottom: 4px;">Equipe do projeto</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--ds-surface); border-radius: var(--ds-r-md);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="f-avatar av-indigo" aria-label="João Silva">JS</div>
+                  <div><div style="font-size: 13px; font-weight: 500; color: var(--ds-text);">João Silva</div><div style="font-size: 11px; color: var(--ds-text-muted);">Product Designer</div></div>
+                </div>
+                <span class="f-tag f-tag-primary">Admin</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--ds-surface); border-radius: var(--ds-r-md);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="f-avatar av-amber" aria-label="Ana Melo">AM</div>
+                  <div><div style="font-size: 13px; font-weight: 500; color: var(--ds-text);">Ana Melo</div><div style="font-size: 11px; color: var(--ds-text-muted);">Frontend Engineer</div></div>
+                </div>
+                <span class="f-tag">Membro</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--ds-surface); border-radius: var(--ds-r-md);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="f-avatar av-green" aria-label="Pedro Costa">PC</div>
+                  <div><div style="font-size: 13px; font-weight: 500; color: var(--ds-text);">Pedro Costa</div><div style="font-size: 11px; color: var(--ds-text-muted);">Backend Engineer</div></div>
+                </div>
+                <span class="f-tag">Membro</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPOUND COMPONENTS -->
+<section class="section">
+  <div class="container">
+    <span class="section-label" data-i18n="section.composed">Componentes Compostos</span>
+    <h2 class="section-heading" data-i18n="section.composed.heading">Primitivos em combinação</h2>
+    <p class="section-sub">Componentes compostos são construídos inteiramente com atômicos. A consistência emerge do sistema, não de cada decisão individual.</p>
+
+    <!-- Alerts -->
+    <div class="component-block">
+      <div class="component-title">06 — Alert / Banner</div>
+      <div class="forge-canvas p-24">
+        <div class="flex-col gap-10">
+          <div class="f-alert f-alert-info" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div class="f-alert-body"><div class="f-alert-title">Sprint 12 iniciado</div><div class="f-alert-msg">O sprint começa hoje e vai até 30 de maio. 14 tasks no backlog.</div></div>
+          </div>
+          <div class="f-alert f-alert-success" role="status">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/><circle cx="12" cy="12" r="9" style="display:none"/></svg>
+            <div class="f-alert-body"><div class="f-alert-title">Deploy realizado com sucesso</div><div class="f-alert-msg">Versão 2.4.1 publicada em produção às 14:32.</div></div>
+          </div>
+          <div class="f-alert f-alert-warning" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            <div class="f-alert-body"><div class="f-alert-title">Prazo se aproximando</div><div class="f-alert-msg">3 tasks críticas vencem em menos de 48 horas.</div></div>
+          </div>
+          <div class="f-alert f-alert-error" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+            <div class="f-alert-body"><div class="f-alert-title">Task bloqueada</div><div class="f-alert-msg">Dependência não resolvida: "Definição de API de autenticação" está pendente.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="component-block">
+      <div class="component-title">07 — Modal</div>
+      <div class="forge-canvas p-24" style="background: oklch(93% 0.006 250);">
+        <div class="f-modal-frame" style="margin: 0 auto;">
+          <div class="f-modal-header">
+            <span class="f-modal-title">Excluir projeto</span>
+            <button class="f-modal-close" aria-label="Fechar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="f-modal-body">
+            <p style="font-size: 14px; color: var(--ds-text-2); line-height: 1.65; font-family: var(--ds-font);">Tem certeza que deseja excluir o projeto <strong style="color: var(--ds-text);">Forge v2</strong>? Esta ação é permanente e não pode ser desfeita. Todas as 47 tasks e histórico serão removidos.</p>
+            <div class="f-alert f-alert-warning mt-16" role="alert" style="font-size: 12px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+              <div class="f-alert-body"><div class="f-alert-msg">Esta ação não pode ser revertida.</div></div>
+            </div>
+          </div>
+          <div class="f-modal-footer">
+            <button class="f-btn f-btn-secondary">Cancelar</button>
+            <button class="f-btn f-btn-danger">Excluir projeto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="component-block">
+      <div class="component-title">08 — Data Table</div>
+      <div class="forge-canvas" style="overflow: hidden;">
+        <table class="f-table" style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="width: 32px; padding-left: 16px;">
+                <div class="f-checkbox indeterminate" role="checkbox" aria-checked="mixed" style="display:inline-flex;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:block;width:10px;height:10px;" aria-hidden="true"><path d="M5 12h14"/></svg>
+                </div>
+              </th>
+              <th>Task</th><th>Responsável</th><th>Status</th><th>Prioridade</th><th>Prazo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding-left: 16px;"><div class="f-checkbox checked" role="checkbox" aria-checked="true"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:block;width:10px;height:10px;" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div></td>
+              <td><span class="f-table-name">Redesenhar tela de onboarding</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="f-avatar f-avatar-sm av-indigo" aria-label="João S.">JS</div><span>João S.</span></div></td>
+              <td><span class="f-badge f-badge-done">Done</span></td>
+              <td><span class="f-priority f-prio-high"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>High</span></td>
+              <td>15 Mai</td>
+            </tr>
+            <tr>
+              <td style="padding-left: 16px;"><div class="f-checkbox" role="checkbox" aria-checked="false"></div></td>
+              <td><span class="f-table-name">Auditoria de acessibilidade</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="f-avatar f-avatar-sm av-amber" aria-label="Ana M.">AM</div><span>Ana M.</span></div></td>
+              <td><span class="f-badge f-badge-progress">In Progress</span></td>
+              <td><span class="f-priority f-prio-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px" aria-hidden="true"><path d="M5 12h14"/></svg>Medium</span></td>
+              <td>22 Mai</td>
+            </tr>
+            <tr>
+              <td style="padding-left: 16px;"><div class="f-checkbox" role="checkbox" aria-checked="false"></div></td>
+              <td><span class="f-table-name">Implementar design tokens no codebase</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="f-avatar f-avatar-sm av-green" aria-label="Pedro C.">PC</div><span>Pedro C.</span></div></td>
+              <td><span class="f-badge f-badge-blocked">Blocked</span></td>
+              <td><span class="f-priority f-prio-critical"><svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>Critical</span></td>
+              <td style="color: oklch(55% 0.22 25); font-weight: 500;">28 Mai</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPOSITIONS -->
+<section class="section section-alt">
+  <div class="container">
+    <span class="section-label" data-i18n="section.compositions">Composições</span>
+    <h2 class="section-heading" data-i18n="section.compositions.heading">O sistema em uso real</h2>
+    <p class="section-sub">Telas completas construídas exclusivamente com componentes Forge. Nenhuma decisão visual fora do sistema.</p>
+
+    <!-- Board View -->
+    <div class="composition-block">
+      <div class="composition-label">Board View — Kanban</div>
+      <div class="board-view forge-canvas" style="border-radius: var(--radius-lg); padding: 0;">
+        <div class="board-topbar">
+          <div class="board-topbar-left">
+            <span class="board-page-title">Sprint 12 — Design System</span>
+            <div class="board-filter-group">
+              <button class="board-filter">Todos os membros <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+              <button class="board-filter">Prioridade <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+            </div>
+          </div>
+          <button class="f-btn f-btn-primary f-btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Nova task
+          </button>
+        </div>
+        <div class="board-columns">
+          <!-- Todo -->
+          <div class="board-col">
+            <div class="board-col-header">
+              <div class="board-col-title-group">
+                <span class="board-col-title">Todo</span>
+                <span class="board-col-count">3</span>
+              </div>
+              <button class="board-add-btn" aria-label="Adicionar task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="f-task-card">
+              <div class="f-task-title">Documentar tokens de cor no Notion</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-todo">Todo</span><span class="f-priority f-prio-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px" aria-hidden="true"><path d="M5 12h14"/></svg>Med</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-indigo" aria-label="João S.">JS</div><span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>28 Mai</span></div>
+            </div>
+            <div class="f-task-card">
+              <div class="f-task-title">Criar variantes dark mode dos tokens</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-todo">Todo</span><span class="f-priority f-prio-high"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>High</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-rose" aria-label="Luisa R.">LR</div><span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>1 Jun</span></div>
+            </div>
+            <div class="f-task-card">
+              <div class="f-task-title">Auditoria de ícones inconsistentes</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-todo">Todo</span><span class="f-priority f-prio-low"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px" aria-hidden="true"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>Low</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-amber" aria-label="Ana M.">AM</div><span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>5 Jun</span></div>
+            </div>
+          </div>
+          <!-- In Progress -->
+          <div class="board-col">
+            <div class="board-col-header">
+              <div class="board-col-title-group">
+                <span class="board-col-title">In Progress</span>
+                <span class="board-col-count" style="background: oklch(92% 0.04 265); color: oklch(52% 0.20 265);">2</span>
+              </div>
+              <button class="board-add-btn" aria-label="Adicionar task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="f-task-card" style="border-color: oklch(85% 0.08 265);">
+              <div class="f-task-title">Redesenhar componente de input com novos tokens</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-progress">In Progress</span><span class="f-priority f-prio-high"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>High</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-indigo" aria-label="João S.">JS</div><span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>20 Mai</span></div>
+            </div>
+            <div class="f-task-card" style="border-color: oklch(85% 0.08 265);">
+              <div class="f-task-title">Escrever guia de contribuição para o sistema</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-progress">In Progress</span><span class="f-priority f-prio-medium"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px" aria-hidden="true"><path d="M5 12h14"/></svg>Med</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-green" aria-label="Pedro C.">PC</div><span class="f-task-due"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>23 Mai</span></div>
+            </div>
+          </div>
+          <!-- Done -->
+          <div class="board-col">
+            <div class="board-col-header">
+              <div class="board-col-title-group">
+                <span class="board-col-title">Done</span>
+                <span class="board-col-count" style="background: oklch(93% 0.03 148); color: oklch(50% 0.18 148);">5</span>
+              </div>
+              <button class="board-add-btn" aria-label="Adicionar task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <div class="f-task-card" style="opacity: 0.75;">
+              <div class="f-task-title" style="text-decoration: line-through; color: var(--ds-text-muted);">Definir paleta de cor com OKLCH</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-done">Done</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-indigo" aria-label="João S.">JS</div><span class="f-task-due" style="color: oklch(50% 0.18 148);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Concluído</span></div>
+            </div>
+            <div class="f-task-card" style="opacity: 0.75;">
+              <div class="f-task-title" style="text-decoration: line-through; color: var(--ds-text-muted);">Escolher tipografia do sistema</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-done">Done</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-amber" aria-label="Ana M.">AM</div><span class="f-task-due" style="color: oklch(50% 0.18 148);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Concluído</span></div>
+            </div>
+            <div class="f-task-card" style="opacity: 0.75;">
+              <div class="f-task-title" style="text-decoration: line-through; color: var(--ds-text-muted);">Criar escala de espaçamento base</div>
+              <div class="f-task-meta"><span class="f-badge f-badge-done">Done</span></div>
+              <div class="f-task-footer"><div class="f-avatar f-avatar-sm av-green" aria-label="Pedro C.">PC</div><span class="f-task-due" style="color: oklch(50% 0.18 148);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Concluído</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Detail -->
+    <div class="composition-block">
+      <div class="composition-label">Task Detail — Sidebar</div>
+      <div class="detail-view forge-canvas" style="border-radius: var(--radius-lg);">
+        <div class="detail-main">
+          <div class="detail-task-title">Redesenhar componente de input com novos tokens</div>
+          <p class="detail-desc">O componente de input atual usa valores hardcoded que não refletem os tokens definidos. É necessário migrar para variáveis CSS com todos os estados: default, focus, error e disabled. Incluir variações com label, helper text e ícone interno.</p>
+
+          <div class="f-alert f-alert-info" role="status" style="margin-bottom: 24px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+            <div class="f-alert-body"><div class="f-alert-msg">Bloqueador resolvido: tokens de cor foram aprovados na revisão de ontem.</div></div>
+          </div>
+
+          <span class="detail-section-label">Subtasks</span>
+          <div class="flex-col gap-8">
+            <div class="f-checkbox-wrap"><div class="f-checkbox checked" role="checkbox" aria-checked="true"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:block;width:10px;height:10px;" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div><span class="f-checkbox-label">Mapear todos os estados visuais</span></div>
+            <div class="f-checkbox-wrap"><div class="f-checkbox checked" role="checkbox" aria-checked="true"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:block;width:10px;height:10px;" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></div><span class="f-checkbox-label">Implementar com tokens CSS</span></div>
+            <div class="f-checkbox-wrap"><div class="f-checkbox" role="checkbox" aria-checked="false"></div><span class="f-checkbox-label">Testar contraste WCAG AA</span></div>
+            <div class="f-checkbox-wrap"><div class="f-checkbox" role="checkbox" aria-checked="false"></div><span class="f-checkbox-label">Documentar no Storybook</span></div>
+          </div>
+
+          <div class="detail-footer">
+            <button class="f-btn f-btn-primary">Salvar alterações</button>
+            <button class="f-btn f-btn-secondary">Cancelar</button>
+            <button class="f-btn f-btn-ghost f-btn-sm" style="margin-left: auto; color: var(--ds-danger);">Excluir task</button>
+          </div>
+        </div>
+        <div class="detail-sidebar">
+          <span class="detail-section-label">Detalhes</span>
+          <div class="detail-field"><span class="detail-field-label">Status</span><span class="f-badge f-badge-progress">In Progress</span></div>
+          <div class="detail-field"><span class="detail-field-label">Prioridade</span><span class="f-priority f-prio-high"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>High</span></div>
+          <div class="detail-field">
+            <span class="detail-field-label">Responsável</span>
+            <div style="display:flex;align-items:center;gap:6px;"><div class="f-avatar f-avatar-sm av-indigo" aria-label="João S.">JS</div><span class="detail-field-value">João S.</span></div>
+          </div>
+          <div class="detail-field"><span class="detail-field-label">Prazo</span><span class="detail-field-value">20 Mai 2025</span></div>
+          <div class="detail-field"><span class="detail-field-label">Projeto</span><span class="f-tag">Forge v2</span></div>
+
+          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--ds-border);">
+            <span class="detail-section-label">Tags</span>
+            <div class="flex-row gap-6 flex-wrap mt-8">
+              <span class="f-tag f-tag-primary">Design System</span>
+              <span class="f-tag">Tokens</span>
+              <span class="f-tag">Sprint 12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="composition-block">
+      <div class="composition-label">Empty State</div>
+      <div class="empty-state forge-canvas">
+        <div class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+        <div class="empty-title">Nenhuma task neste sprint</div>
+        <div class="empty-desc">Crie a primeira task do sprint ou mova cards do backlog para começar.</div>
+        <div class="flex-row gap-8">
+          <button class="f-btn f-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Criar task
+          </button>
+          <button class="f-btn f-btn-secondary">Ver backlog</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="section">
+  <div class="container">
+    <span class="section-label" data-i18n="section.results">Resultados</span>
+    <h2 class="section-heading" data-i18n="section.results.heading">O sistema prova seu valor em métricas</h2>
+    <p class="section-sub">Medidos em 3 meses pós-adoção, comparando com o trimestre anterior ao sistema.</p>
+
+    <div class="results-grid">
+      <div class="result-card">
+        <div class="result-label" data-i18n="result.handoff">Handoff</div>
+        <div class="result-stat">3h → 1.2h</div>
+        <div class="result-desc" data-i18n="result.handoff.desc">Tempo médio de handoff por componente novo (↓60%)</div>
+      </div>
+      <div class="result-card">
+        <div class="result-label" data-i18n="result.quality">Qualidade</div>
+        <div class="result-stat">↓71%</div>
+        <div class="result-desc" data-i18n="result.quality.desc">Inconsistências visuais reportadas em QA pós-implementação</div>
+      </div>
+      <div class="result-card">
+        <div class="result-label" data-i18n="result.speed">Velocidade</div>
+        <div class="result-stat">3× mais rápido</div>
+        <div class="result-desc" data-i18n="result.speed.desc">Velocidade de prototipação em flows novos usando componentes</div>
+      </div>
+      <div class="result-card">
+        <div class="result-label" data-i18n="result.adoption">Adoção</div>
+        <div class="result-stat">12 times</div>
+        <div class="result-desc" data-i18n="result.adoption.desc">Usando o Forge nos primeiros 2 meses após lançamento interno</div>
+      </div>
+    </div>
+
+    <div style="padding: 28px 32px; background: var(--bg-surface); border-radius: var(--radius-lg); margin-top: 40px; border: 1px solid var(--border-subtle);">
+      <p style="color: var(--text-secondary); line-height: 1.8; margin: 0;">
+        <strong style="color: var(--accent); display: block; margin-bottom: 10px;">Principal aprendizado:</strong>
+        O maior ganho não foi visual. Foi de confiança. Quando o time sabe que pode referenciar o sistema em vez de reinventar, as conversas mudam de "qual versão usar?" para "o que estamos tentando resolver?". Sistemas liberam espaço cognitivo para o que importa.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2 data-i18n="cta.heading">Quer conversar sobre sistemas de design?</h2>
+    <p data-i18n="cta.description">Posso detalhar o processo de token architecture, como conduzimos a adoção pelos times, ou a estratégia de documentação viva.</p>
+    <div class="cta-buttons">
+      <a href="mailto:eduardoazuolas@gmail.com" class="btn btn-primary">
+        Enviar e-mail
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/eduardo-azuolas/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <p style="margin-bottom: 16px;">© 2025 Eduardo Azuolas. Designed with intention.</p>
+    <p style="font-size: 13px; color: var(--text-muted);">
+      <a href="https://www.linkedin.com/in/eduardo-azuolas/" target="_blank" rel="noopener noreferrer">LinkedIn</a> ·
+      <a href="mailto:eduardoazuolas@gmail.com">Email</a> ·
+      <a href="../index.html">Portfólio</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  const translations = {
+    pt: {
+      'nav.back': '← Voltar',
+      'case.label': 'Design System · B2B SaaS · 2025',
+      'section.problem': 'O Problema',
+      'section.problem.heading': 'Escala sem sistema é caos com logo bonito',
+      'section.tokens': 'Token Foundation',
+      'section.tokens.heading': 'Tudo começa antes do componente',
+      'section.atomic': 'Componentes Atômicos',
+      'section.atomic.heading': 'Primitivos que compõem tudo',
+      'section.composed': 'Componentes Compostos',
+      'section.composed.heading': 'Primitivos em combinação',
+      'section.compositions': 'Composições',
+      'section.compositions.heading': 'O sistema em uso real',
+      'section.results': 'Resultados',
+      'section.results.heading': 'O sistema prova seu valor em métricas',
+      'result.handoff': 'Handoff',
+      'result.handoff.desc': 'Tempo médio de handoff por componente novo (↓60%)',
+      'result.quality': 'Qualidade',
+      'result.quality.desc': 'Inconsistências visuais reportadas em QA pós-implementação',
+      'result.speed': 'Velocidade',
+      'result.speed.desc': 'Velocidade de prototipação em flows novos usando componentes',
+      'result.adoption': 'Adoção',
+      'result.adoption.desc': 'Usando o Forge nos primeiros 2 meses após lançamento interno',
+      'cta.heading': 'Quer conversar sobre sistemas de design?',
+      'cta.description': 'Posso detalhar o processo de token architecture, como conduzimos a adoção pelos times, ou a estratégia de documentação viva.'
+    },
+    en: {
+      'nav.back': '← Back',
+      'case.label': 'Design System · B2B SaaS · 2025',
+      'section.problem': 'The Problem',
+      'section.problem.heading': 'Scale without systems is just chaos with a nice logo',
+      'section.tokens': 'Token Foundation',
+      'section.tokens.heading': 'Everything starts before the component',
+      'section.atomic': 'Atomic Components',
+      'section.atomic.heading': 'Primitives that compose everything',
+      'section.composed': 'Composed Components',
+      'section.composed.heading': 'Primitives in combination',
+      'section.compositions': 'Compositions',
+      'section.compositions.heading': 'The system in real use',
+      'section.results': 'Results',
+      'section.results.heading': 'The system proves its value in metrics',
+      'result.handoff': 'Handoff',
+      'result.handoff.desc': 'Average handoff time per new component (↓60%)',
+      'result.quality': 'Quality',
+      'result.quality.desc': 'Visual inconsistencies reported in QA post-implementation',
+      'result.speed': 'Speed',
+      'result.speed.desc': 'Prototyping speed in new flows using components',
+      'result.adoption': 'Adoption',
+      'result.adoption.desc': 'Teams using Forge within the first 2 months of internal launch',
+      'cta.heading': 'Want to talk about design systems?',
+      'cta.description': 'I can detail the token architecture process, how we drove adoption across teams, or the living documentation strategy.'
+    }
+  };
+
+  let currentLang = localStorage.getItem('ea-portfolio-lang') || 'pt';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('ea-portfolio-lang', lang);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    document.documentElement.setAttribute('data-lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+      btn.setAttribute('data-active', btn.getAttribute('data-lang-btn') === lang ? 'true' : 'false');
+    });
+  }
+
+  function toggleLang() {
+    setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => setLanguage(currentLang));
+
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+</script>
+</body>
+</html>

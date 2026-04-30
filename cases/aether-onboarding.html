@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Aether — AI Onboarding Experience | Case Study" />
+  <meta property="og:title" content="Aether — Teaching AI by Showing It" />
+  <meta property="og:description" content="Como um onboarding que prova valor em vez de explicar reduziu drop-off em 52% e aumentou retenção D7 em 38%." />
+  <meta property="og:type" content="article" />
+
+  <title>Aether — AI Onboarding Case Study</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── DESIGN TOKENS ─── */
+    :root {
+      --bg-base:        oklch(15% 0.022 60);
+      --bg-surface:     oklch(20% 0.026 60);
+      --bg-surface-2:   oklch(25% 0.030 60);
+      --indigo:         oklch(58% 0.12 148);
+      --indigo-muted:   oklch(22% 0.05 148);
+      --indigo-glow:    oklch(58% 0.12 148 / 0.15);
+      --accent:         oklch(58% 0.12 148);
+      --accent-muted:   oklch(22% 0.05 148);
+      --text-primary:   oklch(90% 0.010 75);
+      --text-secondary: oklch(66% 0.010 75);
+      --text-muted:     oklch(48% 0.008 75);
+      --border-subtle:  oklch(27% 0.018 60);
+      --border-glass:   oklch(35% 0.022 60);
+      --font-display:   'Cormorant Garamond', Georgia, serif;
+      --font-body:      'Inter', system-ui, sans-serif;
+      --radius-sm:      6px;
+      --radius-md:      12px;
+      --radius-lg:      20px;
+      --radius-pill:    999px;
+      --duration-fast:  150ms;
+      --duration-base:  300ms;
+      --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-letter:    cubic-bezier(0.34, 1.56, 0.64, 1);
+      --shadow-sm:      0 1px 4px oklch(7% 0.01 60 / 0.5);
+      --shadow-md:      0 4px 16px oklch(7% 0.01 60 / 0.6);
+      --shadow-lg:      0 8px 32px oklch(7% 0.01 60 / 0.7);
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ─── CONTAINER ─── */
+    .container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 768px) { .container { padding: 0 32px; } }
+
+    /* ─── REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+    }
+    .reveal.revealed { opacity: 1; transform: translateY(0); }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 72px;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      z-index: 1000;
+      transition: border-color var(--duration-base), background var(--duration-base), box-shadow var(--duration-base);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    @media (min-width: 768px) { .navbar { padding: 0 32px; } }
+    .navbar.scrolled {
+      background: oklch(15% 0.022 60 / 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom-color: var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-base);
+    }
+    .nav-back:hover { color: var(--accent); }
+    .nav-back svg { width: 16px; height: 16px; }
+
+    .nav-breadcrumb {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-breadcrumb span { color: var(--indigo); }
+
+    /* ─── HERO ─── */
+    .case-hero {
+      margin-top: 72px;
+      padding: 80px 0 60px;
+      background: linear-gradient(135deg, oklch(58% 0.12 148 / 0.08) 0%, var(--bg-base) 60%);
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+      overflow: hidden;
+    }
+    @media (min-width: 768px) { .case-hero { padding: 120px 0 80px; } }
+
+    .case-hero::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(ellipse at center,
+        oklch(58% 0.12 148 / 0.06) 0%,
+        transparent 65%);
+      pointer-events: none;
+    }
+
+    .case-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 12px;
+    }
+
+    .case-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4.2rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .case-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text-secondary);
+      max-width: 680px;
+      line-height: 1.65;
+      margin-bottom: 48px;
+    }
+
+    /* ─── METRICS GRID ─── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 56px;
+      max-width: 640px;
+    }
+    @media (min-width: 768px) { .metrics-grid { gap: 24px; } }
+
+    .metric-card {
+      padding: 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-base);
+    }
+    .metric-card:hover { border-color: var(--indigo); }
+
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 400;
+      color: var(--indigo);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      line-height: 1.5;
+    }
+
+    /* ─── SECTION BASE ─── */
+    .section { padding: 80px 0; }
+    @media (min-width: 768px) { .section { padding: 120px 0; } }
+
+    .section-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 20px;
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 48px;
+      letter-spacing: -0.01em;
+    }
+    @media (min-width: 768px) { .section-heading { margin-bottom: 64px; } }
+
+    /* ─── PULL QUOTE ─── */
+    .pull-quote {
+      border-left: 2px solid var(--indigo);
+      padding: 24px 32px;
+      margin-bottom: 40px;
+      background: var(--indigo-muted);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+
+    .pull-quote p {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+      font-weight: 300;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* ─── PRINCIPLE PILLS ─── */
+    .principle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .principle-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: 1px solid oklch(58% 0.12 148 / 0.25);
+      border-radius: var(--radius-pill);
+      background: var(--indigo-muted);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .principle-pill .arrow {
+      color: var(--indigo);
+      font-weight: 600;
+    }
+
+    /* ─── PROBLEM CONTENT ─── */
+    .problem-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (min-width: 768px) { .problem-content { grid-template-columns: 1fr 1fr; gap: 64px; } }
+
+    .problem-text p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .insight-list { display: flex; flex-direction: column; gap: 20px; }
+
+    .insight-item {
+      padding: 20px;
+      background: var(--indigo-muted);
+      border: 1px solid oklch(58% 0.12 148 / 0.2);
+      border-radius: var(--radius-md);
+    }
+
+    .insight-item strong {
+      color: var(--indigo);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .insight-item p { font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.6; }
+
+    /* ─── TENSION BAR ─── */
+    .tension-block {
+      padding: 36px 40px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--indigo);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      margin-top: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tension-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 28px;
+    }
+
+    .tension-bars {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .tension-side { display: flex; flex-direction: column; gap: 8px; }
+    .tension-side.right { text-align: right; align-items: flex-end; }
+
+    .tension-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .tension-label.curiosity { color: var(--accent); }
+    .tension-label.fear { color: #FF6B5B; }
+
+    .tension-bar-track {
+      height: 4px;
+      background: var(--border-subtle);
+      border-radius: 2px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .tension-bar-fill { height: 100%; border-radius: 2px; }
+    .curiosity .tension-bar-fill { background: var(--accent); width: 75%; }
+    .fear .tension-bar-fill { background: #FF6B5B; width: 85%; margin-left: auto; }
+
+    .tension-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    .tension-center {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--indigo-muted);
+      border: 1px solid oklch(58% 0.12 148 / 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--indigo);
+      flex-shrink: 0;
+    }
+
+    .tension-resolution {
+      padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .tension-resolution strong { color: var(--text-primary); }
+
+    /* ─── PRINCIPLE CARDS ─── */
+    .principle-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 640px) { .principle-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .principle-card {
+      padding: 28px 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-base) var(--ease-out);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .principle-card:hover {
+      border-color: oklch(58% 0.12 148 / 0.35);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .principle-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--indigo), transparent);
+      opacity: 0;
+      transition: opacity var(--duration-base);
+    }
+    .principle-card:hover::before { opacity: 1; }
+
+    .principle-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: oklch(25% 0.04 148);
+      border: 1px solid oklch(58% 0.12 148 / 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .principle-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .principle-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .principle-removed {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .principle-removed span { color: #FF6B5B; margin-right: 4px; }
+
+    /* ─── TIMELINE ─── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+
+    .timeline-step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 24px;
+      position: relative;
+    }
+
+    .timeline-step:not(:last-child) .timeline-connector::after {
+      content: '';
+      position: absolute;
+      top: 56px;
+      left: 27px;
+      width: 2px;
+      height: calc(100% - 56px + 32px);
+      background: linear-gradient(to bottom, oklch(58% 0.12 148 / 0.3), transparent);
+    }
+
+    .timeline-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .timeline-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--indigo-muted);
+      border: 1px solid oklch(58% 0.12 148 / 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--indigo);
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .timeline-body {
+      padding-bottom: 48px;
+    }
+
+    .timeline-step-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      margin-top: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .timeline-why {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--indigo);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ─── SCREEN MOCKUPS ─── */
+    .screens-scroll {
+      overflow-x: auto;
+      padding-bottom: 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screens-track {
+      display: flex;
+      gap: 24px;
+      padding: 8px 4px 16px;
+      width: max-content;
+    }
+
+    .screen-frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .screen-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* Phone shell */
+    .ph {
+      width: 180px;
+      background: #08090f;
+      border-radius: 24px;
+      border: 1.5px solid rgba(255,255,255,0.09);
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.7),
+                  0 0 0 1px rgba(255,255,255,0.04);
+      flex-shrink: 0;
+    }
+
+    .ph.active {
+      border-color: rgba(124,111,255,0.45);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.7),
+                  0 0 0 1px rgba(124,111,255,0.15),
+                  0 0 40px rgba(124,111,255,0.1);
+    }
+
+    .ph-bar {
+      height: 26px;
+      background: #040508;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .ph-island {
+      width: 52px;
+      height: 9px;
+      background: #000;
+      border-radius: 5px;
+    }
+
+    .ph-screen { padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; min-height: 300px; }
+
+    /* Screen 1 — Welcome */
+    .s1-logo {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7C6FFF 0%, #A78BFA 100%);
+      margin: 16px auto 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s1-logo-inner {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.9);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
+    .s1-h { height: 10px; background: rgba(255,255,255,0.85); border-radius: 2px; width: 70%; margin: 0 auto 6px; }
+    .s1-sub { height: 7px; background: rgba(255,255,255,0.25); border-radius: 2px; width: 85%; margin: 0 auto 4px; }
+    .s1-sub2 { height: 7px; background: rgba(255,255,255,0.18); border-radius: 2px; width: 60%; margin: 0 auto 20px; }
+    .s1-cta {
+      height: 32px; border-radius: 8px;
+      background: linear-gradient(90deg, #7C6FFF, #A78BFA);
+      margin: 0 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s1-cta-text { height: 7px; width: 60%; background: rgba(255,255,255,0.9); border-radius: 2px; }
+    .s1-skip { height: 6px; background: rgba(255,255,255,0.15); border-radius: 2px; width: 35%; margin: 8px auto 0; }
+
+    /* Screen 2 — Intent Selection */
+    .s2-label { height: 8px; background: rgba(255,255,255,0.7); border-radius: 2px; width: 55%; margin-bottom: 4px; }
+    .s2-sub { height: 6px; background: rgba(255,255,255,0.2); border-radius: 2px; width: 80%; margin-bottom: 14px; }
+    .s2-card {
+      padding: 9px 10px; border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .s2-card.sel {
+      background: rgba(124,111,255,0.12);
+      border-color: rgba(124,111,255,0.42);
+    }
+    .s2-icon {
+      width: 20px; height: 20px; border-radius: 5px;
+      background: rgba(255,255,255,0.06);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s2-card.sel .s2-icon { background: rgba(124,111,255,0.2); }
+    .s2-icon-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+    .s2-card.sel .s2-icon-dot { background: rgba(124,111,255,0.8); }
+    .s2-texts { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+    .s2-t { height: 7px; background: rgba(255,255,255,0.12); border-radius: 2px; width: 75%; }
+    .s2-card.sel .s2-t { background: rgba(124,111,255,0.5); }
+    .s2-d { height: 5px; background: rgba(255,255,255,0.06); border-radius: 2px; width: 50%; }
+    .s2-next {
+      height: 28px; border-radius: 7px; margin-top: 8px;
+      background: rgba(124,111,255,0.22);
+      border: 1px solid rgba(124,111,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s2-next-t { height: 6px; width: 40%; background: rgba(124,111,255,0.7); border-radius: 2px; }
+
+    /* Screen 3 — Guided Input */
+    .s3-chip {
+      padding: 5px 10px; border-radius: var(--radius-pill);
+      background: rgba(124,111,255,0.12);
+      border: 1px solid oklch(58% 0.12 148 / 0.25);
+      margin-bottom: 10px;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .s3-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--indigo); flex-shrink: 0; }
+    .s3-chip-text { height: 6px; background: rgba(124,111,255,0.6); border-radius: 2px; width: 80px; }
+    .s3-label { height: 7px; background: rgba(255,255,255,0.6); border-radius: 2px; width: 50%; margin-bottom: 8px; }
+    .s3-input {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      padding: 10px;
+      height: 70px;
+      position: relative;
+    }
+    .s3-cursor {
+      width: 1px; height: 11px; background: var(--indigo);
+      display: inline-block;
+      animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+    .s3-placeholder { height: 6px; background: rgba(255,255,255,0.1); border-radius: 2px; width: 90%; margin-bottom: 5px; }
+    .s3-placeholder2 { height: 6px; background: rgba(255,255,255,0.07); border-radius: 2px; width: 65%; }
+    .s3-ghost {
+      margin-top: 8px; padding: 8px 10px;
+      border: 1px dashed rgba(124,111,255,0.35);
+      border-radius: 7px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .s3-ghost-bar { height: 6px; background: rgba(124,111,255,0.3); border-radius: 2px; flex: 1; }
+    .s3-ghost-arrow { width: 10px; height: 10px; border-top: 1.5px solid rgba(124,111,255,0.5); border-right: 1.5px solid rgba(124,111,255,0.5); transform: rotate(45deg); flex-shrink: 0; }
+    .s3-send {
+      margin-top: 10px; height: 28px; border-radius: 7px;
+      background: linear-gradient(90deg, rgba(124,111,255,0.7), rgba(124,111,255,0.5));
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s3-send-t { height: 6px; width: 35%; background: rgba(255,255,255,0.6); border-radius: 2px; }
+
+    /* Screen 4 — AI Output */
+    .s4-tag {
+      padding: 4px 8px; border-radius: var(--radius-pill);
+      background: rgba(0,217,255,0.08);
+      border: 1px solid rgba(0,217,255,0.2);
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-bottom: 10px;
+    }
+    .s4-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse-dot 1.4s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
+    .s4-tag-text { height: 6px; background: rgba(0,217,255,0.4); border-radius: 2px; width: 45px; }
+
+    .s4-bubble {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .s4-line { height: 6px; background: rgba(255,255,255,0.12); border-radius: 2px; }
+    .s4-line.short { width: 60%; }
+    .s4-line.med { width: 80%; }
+    .s4-line.long { width: 95%; }
+    .s4-typing { display: flex; align-items: center; gap: 4px; padding: 6px 0 2px; }
+    .s4-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); opacity: 0.6;
+    }
+    .s4-dot:nth-child(1) { animation: typingDot 1.2s ease-in-out 0s infinite; }
+    .s4-dot:nth-child(2) { animation: typingDot 1.2s ease-in-out 0.2s infinite; }
+    .s4-dot:nth-child(3) { animation: typingDot 1.2s ease-in-out 0.4s infinite; }
+    @keyframes typingDot { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-4px);opacity:1} }
+    .s4-chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+    .s4-chip { height: 18px; border-radius: 4px; background: rgba(0,217,255,0.08); border: 1px solid rgba(0,217,255,0.18); }
+    .s4-chip:nth-child(1) { width: 48px; }
+    .s4-chip:nth-child(2) { width: 36px; }
+    .s4-chip:nth-child(3) { width: 42px; }
+
+    /* Screen 5 — Success */
+    .s5-check-wrap { display: flex; justify-content: center; padding: 16px 0 12px; }
+    .s5-check-circle {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(124,111,255,0.15);
+      border: 1.5px solid rgba(124,111,255,0.5);
+      display: flex; align-items: center; justify-content: center;
+      animation: popIn 0.5s var(--ease-out) both;
+    }
+    @keyframes popIn { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
+    .s5-check-svg { width: 20px; height: 20px; }
+    .s5-title { height: 9px; background: rgba(255,255,255,0.8); border-radius: 2px; width: 60%; margin: 0 auto 6px; }
+    .s5-stat {
+      text-align: center;
+      padding: 10px;
+      background: rgba(124,111,255,0.08);
+      border: 1px solid rgba(124,111,255,0.2);
+      border-radius: 8px;
+      margin: 8px 0;
+      display: flex; flex-direction: column; gap: 4px; align-items: center;
+    }
+    .s5-stat-v { height: 14px; background: rgba(124,111,255,0.6); border-radius: 3px; width: 40px; }
+    .s5-stat-l { height: 6px; background: rgba(255,255,255,0.15); border-radius: 2px; width: 60px; }
+    .s5-next-label { height: 6px; background: rgba(255,255,255,0.25); border-radius: 2px; width: 55%; margin-bottom: 8px; }
+    .s5-next-card {
+      padding: 8px 10px; border-radius: 7px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 5px;
+    }
+    .s5-nc-t { height: 7px; background: rgba(255,255,255,0.12); border-radius: 2px; width: 70%; margin-bottom: 4px; }
+    .s5-nc-d { height: 5px; background: rgba(255,255,255,0.07); border-radius: 2px; width: 50%; }
+
+    /* ─── MOMENT DESIGN ─── */
+    .moment-block {
+      padding: 40px;
+      background: var(--indigo-muted);
+      border: 1px solid oklch(58% 0.12 148 / 0.2);
+      border-radius: var(--radius-lg);
+    }
+
+    .moment-block h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    .moment-block p { font-size: 15px; color: var(--text-secondary); line-height: 1.8; }
+
+    /* ─── TRADEOFFS TABLE ─── */
+    .tradeoffs-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media (min-width: 640px) { .tradeoffs-grid { grid-template-columns: 1fr 1fr; } }
+
+    .tradeoffs-col {
+      padding: 28px;
+      border-radius: var(--radius-lg);
+    }
+
+    .tradeoffs-col.removed {
+      background: rgba(255,107,91,0.04);
+      border: 1px solid rgba(255,107,91,0.15);
+    }
+
+    .tradeoffs-col.kept {
+      background: rgba(124,111,255,0.04);
+      border: 1px solid rgba(124,111,255,0.2);
+    }
+
+    .tradeoffs-col h4 {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .tradeoffs-col.removed h4 { color: #FF6B5B; }
+    .tradeoffs-col.kept h4 { color: var(--indigo); }
+
+    .tradeoff-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .tradeoff-item .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .removed .dot { background: #FF6B5B; }
+    .kept .dot { background: var(--indigo); }
+
+    /* ─── BEHAVIORAL MECHANICS ─── */
+    .mechanics-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 640px) { .mechanics-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .mechanic-card {
+      padding: 28px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-base) var(--ease-out);
+      box-shadow: var(--shadow-sm);
+    }
+    .mechanic-card:hover {
+      border-color: oklch(58% 0.12 148 / 0.3);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .mechanic-number {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: oklch(58% 0.12 148 / 0.2);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .mechanic-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .mechanic-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+    /* ─── RESULTS GRID ─── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    @media (min-width: 768px) { .results-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .result-card {
+      padding: 28px 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      transition: all var(--duration-base);
+    }
+    .result-card:hover { border-color: var(--indigo); transform: translateY(-4px); }
+
+    .result-card h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--indigo);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .result-stat {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .result-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ─── REFLECTION ─── */
+    .reflection-block {
+      max-width: 760px;
+    }
+
+    .reflection-quote {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      font-weight: 300;
+      color: var(--text-primary);
+      line-height: 1.45;
+      margin-bottom: 40px;
+      padding-left: 24px;
+      border-left: 2px solid var(--indigo);
+    }
+
+    .reflection-block p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    /* ─── CTA NEXT ─── */
+    .case-cta {
+      border-top: 1px solid var(--border-subtle);
+      padding: 64px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    @media (min-width: 640px) { .case-cta { flex-direction: row; justify-content: space-between; align-items: center; } }
+
+    .case-cta p {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 400px;
+    }
+
+    .cta-links { display: flex; gap: 16px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border: 1px solid var(--indigo);
+      color: var(--indigo);
+      background: transparent;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all var(--duration-base);
+    }
+    .btn-primary:hover {
+      background: var(--indigo);
+      color: var(--bg-base);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      background: transparent;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all var(--duration-base);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    @media (min-width: 768px) { .footer { padding: 48px 32px; } }
+
+    .footer-link { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-fast); }
+    .footer-link:hover { color: var(--accent); }
+
+    /* ─── FOCUS ─── */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--indigo);
+      outline-offset: 3px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+      margin: 0;
+    }
+
+    /* ── LANG TOGGLE ── */
+    .lang-toggle {
+      display: flex; align-items: center; gap: 8px;
+      background: transparent; border: 1px solid var(--border-glass); border-radius: var(--radius-pill);
+      padding: 6px 12px; cursor: pointer; transition: all var(--duration-base);
+      font-size: 12px; font-weight: 600; color: var(--text-secondary); font-family: var(--font-body);
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--text-primary); }
+    .lang-divider { opacity: 0.4; }
+    [data-lang-btn] { transition: color var(--duration-base); }
+    [data-lang-btn][data-active="true"] { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="../index.html" class="nav-back" aria-label="Voltar ao portfólio" data-i18n="nav.back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Portfolio
+    </a>
+    <button class="lang-toggle" type="button" onclick="toggleLang()" aria-label="Alternar idioma">
+      <span data-lang-btn="pt" data-active="true">PT</span>
+      <span class="lang-divider">/</span>
+      <span data-lang-btn="en" data-active="false">EN</span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <header class="case-hero">
+    <div class="container">
+      <span class="case-label reveal" data-i18n="case.label">AI · Onboarding Experience · 2024</span>
+      <h1 class="case-title reveal" style="animation-delay:0.1s;">
+        Aether — Teaching AI<br/>by Showing It
+      </h1>
+      <p class="case-tagline reveal" style="animation-delay:0.2s;">
+        Most AI onboardings try to explain what the product can do.<br/>
+        Ours decided to just <em>do it</em> — in under five minutes.
+      </p>
+
+      <div class="metrics-grid reveal" style="animation-delay:0.3s;">
+        <div class="metric-card">
+          <div class="metric-value">&lt; 5 min</div>
+          <div class="metric-label">Tempo ao Aha Moment</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">+38%</div>
+          <div class="metric-label">Retenção D7 vs. baseline</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">−52%</div>
+          <div class="metric-label">Drop-off no primeiro prompt</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PART 1: DESIGN POV -->
+  <section class="section" aria-label="Design POV">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.part1">Part 1 — Design POV</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.part1.heading">
+        O que onboarding de IA<br/>deveria ser
+      </h2>
+
+      <div class="pull-quote reveal" style="animation-delay:0.15s;">
+        <p>"Onboarding não deveria ensinar o produto.<br/>Deveria provar que o produto funciona."</p>
+      </div>
+
+      <div class="problem-text reveal" style="animation-delay:0.2s;" style="max-width:720px;">
+        <p>
+          A maioria das jornadas de onboarding de IA segue o mesmo roteiro: um carrossel explicando features, um tutorial interativo, uma lista de capacidades. Tudo isso pressupõe que o usuário precisa entender o produto antes de usá-lo.
+        </p>
+        <p>
+          Mas usuários não querem entender AI. Eles querem sentir que AI funciona — para eles, agora, neste momento. A diferença entre "entender" e "sentir" é a diferença entre uma feature tour e uma memória.
+        </p>
+      </div>
+
+      <div class="principle-row reveal" style="animation-delay:0.25s;">
+        <div class="principle-pill">
+          <span class="arrow">→</span> Mostrar, não explicar
+        </div>
+        <div class="principle-pill">
+          <span class="arrow">→</span> Começar antes de estar pronto
+        </div>
+        <div class="principle-pill">
+          <span class="arrow">→</span> Reduzir antes de adicionar
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PART 1: PROBLEM BENEATH THE PROBLEM -->
+  <section class="section" aria-label="Problema">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.problem">O Problema Abaixo do Problema</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.problem.heading">
+        Por que o cursor piscando<br/>assusta tanto
+      </h2>
+
+      <div class="problem-content">
+        <div class="problem-text reveal" style="animation-delay:0.15s;">
+          <p>
+            Quando você abre um assistente de IA pela primeira vez, o que aparece é um campo de texto vazio. Do ponto de vista técnico, é uma caixa de input. Do ponto de vista psicológico, é um exame oral — sem roteiro, sem critério, sem resposta certa.
+          </p>
+          <p>
+            O problema não é que usuários não entendam IA. É que eles <strong>não sabem o que pedir</strong>. E não saber o que pedir é paralisante. Não porque sejam incapazes, mas porque nenhum produto os mostrou como começar.
+          </p>
+          <p>
+            A intimidação não é sobre AI. É sobre a exposição do próprio pensamento. Escrever um prompt é, em certo nível, articular o que você quer — e isso exige clareza que a maioria das pessoas ainda não tem sobre o produto.
+          </p>
+        </div>
+
+        <div class="insight-list reveal" style="animation-delay:0.2s;">
+          <div class="insight-item">
+            <strong>Paralisia de Intenção</strong>
+            <p>Usuários sabem que AI pode fazer muita coisa — e exatamente por isso não sabem por onde começar. Quanto mais poderoso o produto, mais intimidante a tela em branco.</p>
+          </div>
+          <div class="insight-item">
+            <strong>Medo de Parecer Inadequado</strong>
+            <p>Escrever um prompt ruim é sentir que você está usando a ferramenta errado. Pessoas evitam situações onde podem "falhar" — especialmente na frente de uma máquina que "sabe tudo".</p>
+          </div>
+          <div class="insight-item">
+            <strong>Curiosidade sem Contexto</strong>
+            <p>A vontade de usar AI existe. Mas sem um ponto de entrada claro, curiosidade vira hesitação em segundos. O design precisa converter a faísca antes que ela apague.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 1: TENSION -->
+  <section class="section" aria-label="Tensão">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.tension">A Tensão Central</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.tension.heading">
+        Curiosidade vs. Medo
+      </h2>
+
+      <div class="tension-block reveal" style="animation-delay:0.15s;">
+        <div class="tension-title">Estado emocional do usuário no primeiro acesso</div>
+
+        <div class="tension-bars">
+          <div class="tension-side curiosity">
+            <div class="tension-label curiosity">Curiosidade</div>
+            <div class="tension-bar-track curiosity">
+              <div class="tension-bar-fill"></div>
+            </div>
+            <div class="tension-desc">"Quero ver o que isso faz."<br/>"Ouvi falar muito disso."</div>
+          </div>
+
+          <div class="tension-center">⇌</div>
+
+          <div class="tension-side fear right">
+            <div class="tension-label fear">Medo</div>
+            <div class="tension-bar-track fear">
+              <div class="tension-bar-fill"></div>
+            </div>
+            <div class="tension-desc">"E se eu não souber usar?"<br/>"Não quero parecer burro."</div>
+          </div>
+        </div>
+
+        <div class="tension-resolution">
+          <strong>O insight que desbloqueou a solução:</strong> o usuário não precisa de mais informação. Ele precisa de um <strong>ponto de entrada seguro</strong> — uma primeira ação que ele não pode errar. Quando o primeiro passo é guiado e o resultado é real, o medo não tem onde se sustentar.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PART 1: PRINCIPLE SYSTEM -->
+  <section class="section" aria-label="Princípios de Design">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.principles">Sistema de Princípios</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.principles.heading">
+        Três decisões que<br/>definiram tudo
+      </h2>
+
+      <div class="principle-grid">
+        <div class="principle-card reveal" style="animation-delay:0.1s;">
+          <div class="principle-icon" aria-hidden="true">👁</div>
+          <div class="principle-name">Mostrar → Não Explicar</div>
+          <div class="principle-desc">
+            A primeira interação com o produto não descreve o que ele faz — ela faz. O usuário vê um resultado real antes de ler qualquer copy sobre features.
+          </div>
+          <div class="principle-removed">
+            <span>✕</span> Removido: feature tour, carrossel de capacidades, tooltips explicativos.
+          </div>
+        </div>
+
+        <div class="principle-card reveal" style="animation-delay:0.2s;">
+          <div class="principle-icon" aria-hidden="true">⚡</div>
+          <div class="principle-name">Começar → Antes de Estar Pronto</div>
+          <div class="principle-desc">
+            Não esperamos o usuário entender o produto para usá-lo. Guiamos a primeira ação antes que ele sinta a necessidade de "estudar" o assistente.
+          </div>
+          <div class="principle-removed">
+            <span>✕</span> Removido: tela de boas-vindas longa, lista de "o que você pode fazer", escolhas de configuração iniciais.
+          </div>
+        </div>
+
+        <div class="principle-card reveal" style="animation-delay:0.3s;">
+          <div class="principle-icon" aria-hidden="true">◻</div>
+          <div class="principle-name">Reduzir → Antes de Adicionar</div>
+          <div class="principle-desc">
+            Cada tela do onboarding passou por um filtro: "isso é necessário para o usuário sentir valor?" Se não, foi removido — sem exceções.
+          </div>
+          <div class="principle-removed">
+            <span>✕</span> Removido: criação de conta no início, permissões, seleção de plano, personalização avançada.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PART 2: ONBOARDING FLOW -->
+  <section class="section" aria-label="Jornada de Onboarding">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.part2">Part 2 — Experience Breakdown</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.part2.heading">
+        A jornada em cinco<br/>momentos
+      </h2>
+
+      <div class="timeline reveal" style="animation-delay:0.15s;">
+
+        <div class="timeline-step">
+          <div class="timeline-connector">
+            <div class="timeline-badge">01</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-step-title">Primeira Impressão — Confiança e Clareza</div>
+            <div class="timeline-desc">
+              O usuário chega à tela de boas-vindas. Sem listas de features. Sem prometer "o poder da AI". Apenas: um nome, uma linha de contexto, e um único botão. A clareza visual sinaliza competência antes de qualquer palavra.
+            </div>
+            <div class="timeline-why">→ Confiança começa com ausência de ruído, não presença de informação.</div>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-connector">
+            <div class="timeline-badge">02</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-step-title">Captura de Intenção — Relevância imediata</div>
+            <div class="timeline-desc">
+              Em vez de um campo em branco, o usuário vê três cartões de intenção: "Escrever um post no LinkedIn", "Planejar uma viagem", "Resumir anotações de reunião". Esses não são exemplos genéricos — são pontes entre o produto e a vida real do usuário.
+            </div>
+            <div class="timeline-why">→ Quando o usuário vê algo familiar, ele para de pensar em "como usar" e começa a pensar em "o que fazer".</div>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-connector">
+            <div class="timeline-badge">03</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-step-title">Ação Assistida — Construindo confiança</div>
+            <div class="timeline-desc">
+              Após escolher uma intenção, o usuário vê um campo de input com um ponto de partida pré-preenchido — não um texto completo, mas um fragmento. "Quero escrever sobre estratégia de produto para..." O usuário completa. A AI já sabe o contexto.
+            </div>
+            <div class="timeline-why">→ Começar de um fragmento é infinitamente menos ameaçador do que começar do zero. Momentum antes de maestria.</div>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-connector">
+            <div class="timeline-badge">04</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-step-title">Resposta da IA — O momento mágico</div>
+            <div class="timeline-desc">
+              Os três pontos piscam. O texto aparece progressivamente. O usuário vê sua intenção transformada em um output polido, real, utilizável. Não uma demo. Não um placeholder. Resultado de verdade, com o contexto dele.
+            </div>
+            <div class="timeline-why">→ Ver sua própria ideia refletida de volta, melhorada, em segundos — é o Aha Moment. É visceral. É memorável.</div>
+          </div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-connector">
+            <div class="timeline-badge">05</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-step-title">Reforço — Criando hábito</div>
+            <div class="timeline-desc">
+              Após o primeiro output, o usuário vê: "Feito em 47 segundos." + dois cartões de próxima ação. Não uma lista de features. Não um paywall. Uma pergunta simples: "O que você quer fazer agora?"
+            </div>
+            <div class="timeline-why">→ O reforço mais poderoso não é um badge — é a pergunta "de novo?" sendo respondida imediatamente com possibilidades.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 2: SCREEN MOCKUPS -->
+  <section class="section" aria-label="Telas do Onboarding" style="padding-top:0;">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.screens">Screens — UI System</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.screens.heading">
+        As cinco telas,<br/>desenhadas em detalhe
+      </h2>
+
+      <div class="screens-scroll reveal" style="animation-delay:0.15s;">
+        <div class="screens-track">
+
+          <!-- Screen 1: Welcome -->
+          <div class="screen-frame">
+            <div class="screen-label">01 Welcome</div>
+            <div class="ph">
+              <div class="ph-bar"><div class="ph-island"></div></div>
+              <div class="ph-screen" style="align-items:center;">
+                <div class="s1-logo"><div class="s1-logo-inner"></div></div>
+                <div class="s1-h"></div>
+                <div class="s1-sub"></div>
+                <div class="s1-sub2"></div>
+                <div class="s1-cta" style="width:100%;"><div class="s1-cta-text"></div></div>
+                <div class="s1-skip"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 2: Intent Selection -->
+          <div class="screen-frame">
+            <div class="screen-label">02 Intent</div>
+            <div class="ph active">
+              <div class="ph-bar"><div class="ph-island"></div></div>
+              <div class="ph-screen">
+                <div class="s2-label"></div>
+                <div class="s2-sub"></div>
+                <div class="s2-card">
+                  <div class="s2-icon"><div class="s2-icon-dot"></div></div>
+                  <div class="s2-texts"><div class="s2-t"></div><div class="s2-d"></div></div>
+                </div>
+                <div class="s2-card sel">
+                  <div class="s2-icon"><div class="s2-icon-dot"></div></div>
+                  <div class="s2-texts"><div class="s2-t"></div><div class="s2-d"></div></div>
+                </div>
+                <div class="s2-card">
+                  <div class="s2-icon"><div class="s2-icon-dot"></div></div>
+                  <div class="s2-texts"><div class="s2-t"></div><div class="s2-d"></div></div>
+                </div>
+                <div class="s2-next"><div class="s2-next-t"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 3: Guided Input -->
+          <div class="screen-frame">
+            <div class="screen-label">03 Input</div>
+            <div class="ph">
+              <div class="ph-bar"><div class="ph-island"></div></div>
+              <div class="ph-screen">
+                <div class="s3-chip"><div class="s3-chip-dot"></div><div class="s3-chip-text"></div></div>
+                <div class="s3-label"></div>
+                <div class="s3-input">
+                  <div class="s3-placeholder"></div>
+                  <div class="s3-placeholder2"></div>
+                  <span class="s3-cursor"></span>
+                </div>
+                <div class="s3-ghost"><div class="s3-ghost-bar"></div><div class="s3-ghost-arrow"></div></div>
+                <div class="s3-send"><div class="s3-send-t"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 4: AI Output -->
+          <div class="screen-frame">
+            <div class="screen-label">04 AI Output</div>
+            <div class="ph active">
+              <div class="ph-bar"><div class="ph-island"></div></div>
+              <div class="ph-screen">
+                <div class="s4-tag"><div class="s4-tag-dot"></div><div class="s4-tag-text"></div></div>
+                <div class="s4-bubble">
+                  <div class="s4-line long"></div>
+                  <div class="s4-line med"></div>
+                  <div class="s4-line long"></div>
+                  <div class="s4-line short"></div>
+                  <div class="s4-typing">
+                    <div class="s4-dot"></div>
+                    <div class="s4-dot"></div>
+                    <div class="s4-dot"></div>
+                  </div>
+                </div>
+                <div class="s4-chips">
+                  <div class="s4-chip"></div>
+                  <div class="s4-chip"></div>
+                  <div class="s4-chip"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 5: Success -->
+          <div class="screen-frame">
+            <div class="screen-label">05 Success</div>
+            <div class="ph">
+              <div class="ph-bar"><div class="ph-island"></div></div>
+              <div class="ph-screen" style="align-items:stretch;">
+                <div class="s5-check-wrap">
+                  <div class="s5-check-circle">
+                    <svg class="s5-check-svg" viewBox="0 0 24 24" fill="none" stroke="rgba(124,111,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="s5-title"></div>
+                <div class="s5-stat">
+                  <div class="s5-stat-v"></div>
+                  <div class="s5-stat-l"></div>
+                </div>
+                <div class="s5-next-label"></div>
+                <div class="s5-next-card"><div class="s5-nc-t"></div><div class="s5-nc-d"></div></div>
+                <div class="s5-next-card"><div class="s5-nc-t"></div><div class="s5-nc-d"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Microcopy callout -->
+      <div class="moment-block reveal" style="animation-delay:0.2s; margin-top: 48px;">
+        <h3>"Done in 47 seconds."<br/>Três palavras que fazem o usuário querer repetir.</h3>
+        <p>
+          O estado de sucesso não celebra o produto — celebra o usuário. Quantificar o tempo transforma uma experiência subjetiva ("foi rápido") em um fato concreto ("47 segundos"). Fatos são compartilháveis. Fatos criam expectativa para o próximo uso. Fatos são o gatilho mais suave de retenção que existe.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PART 2: TRADEOFFS -->
+  <section class="section" aria-label="Decisões e Trade-offs">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.decisions">Decisões Deliberadas</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.decisions.heading">
+        O que removemos —<br/>e por quê importa
+      </h2>
+
+      <div class="tradeoffs-grid reveal" style="animation-delay:0.15s;">
+        <div class="tradeoffs-col removed">
+          <h4>O que deliberadamente removemos</h4>
+          <div class="tradeoff-item"><div class="dot"></div><span>Campo de input em branco como primeiro contato com o produto</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span>Carrossel de features e capacidades no início</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span>Criação obrigatória de conta antes do primeiro valor</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span>Seleção de plano/pricing durante onboarding</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span>Permissões de notificação e câmera no primeiro acesso</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span>Tutorial passo a passo com "Próximo →"</span></div>
+        </div>
+
+        <div class="tradeoffs-col kept">
+          <h4>O que mantivemos e por quê</h4>
+          <div class="tradeoff-item"><div class="dot"></div><span><strong>Intenções reais:</strong> "LinkedIn post", "viagem ao Japão" — contextos familiares constroem confiança antes da interação.</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span><strong>Fragmento pré-preenchido:</strong> reduz a ansiedade do cursor piscando mantendo a agência do usuário.</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span><strong>Typing indicator:</strong> cria expectativa e sinaliza que algo real está acontecendo.</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span><strong>Tempo quantificado:</strong> "47 segundos" dá ao usuário uma referência para expectativas futuras.</span></div>
+          <div class="tradeoff-item"><div class="dot"></div><span><strong>Próximas ações contextual:</strong> o hábito começa na segunda interação, não na primeira.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 2: BEHAVIORAL MECHANICS -->
+  <section class="section" style="padding-top:0;" aria-label="Mecânicas Comportamentais">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.mechanics">Mecânicas Comportamentais</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.mechanics.heading">
+        Como guiamos sem<br/>instruir
+      </h2>
+
+      <div class="mechanics-grid">
+        <div class="mechanic-card reveal" style="animation-delay:0.1s;">
+          <div class="mechanic-number">01</div>
+          <div class="mechanic-title">Redução de Medo</div>
+          <div class="mechanic-desc">
+            Nunca pedimos ao usuário para criar algo do zero. As intenções pré-definidas funcionam como trilhos invisíveis — o usuário sente que está no controle, mas nunca pode "errar" o começo. O medo de fazer errado se dissolve quando não existe uma resposta errada.
+          </div>
+        </div>
+
+        <div class="mechanic-card reveal" style="animation-delay:0.2s;">
+          <div class="mechanic-number">02</div>
+          <div class="mechanic-title">Guia de Ação</div>
+          <div class="mechanic-desc">
+            O fragmento pré-preenchido no input não é um placeholder — é um convite. Ao completar uma frase iniciada pelo produto, o usuário co-cria sua primeira experiência. Isso cria um senso de autoria que aumenta o investimento emocional no resultado.
+          </div>
+        </div>
+
+        <div class="mechanic-card reveal" style="animation-delay:0.3s;">
+          <div class="mechanic-number">03</div>
+          <div class="mechanic-title">Gatilho de Hábito</div>
+          <div class="mechanic-desc">
+            "O que você quer fazer agora?" é a pergunta mais poderosa do onboarding — e ela aparece só depois que o usuário sentiu valor. Não antes. O hábito não é construído com gamificação ou streaks. É construído quando o retorno ao produto parece natural.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PART 1: EXPECTED IMPACT -->
+  <section class="section" aria-label="Impacto Esperado">
+    <div class="container">
+      <span class="section-label reveal" data-i18n="section.impact">Impacto Esperado</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;" data-i18n="section.impact.heading">
+        Decisões de design<br/>traduzidas em métricas
+      </h2>
+
+      <div class="results-grid reveal" style="animation-delay:0.15s;">
+        <div class="result-card">
+          <h3>Activation Rate</h3>
+          <div class="result-stat">+61%</div>
+          <div class="result-desc">Usuários que completaram o onboarding e enviaram o primeiro prompt real (não tutorial).</div>
+        </div>
+        <div class="result-card">
+          <h3>TTFV</h3>
+          <div class="result-stat">&lt; 5 min</div>
+          <div class="result-desc">Tempo médio do primeiro acesso ao primeiro output utilizável — de 14 minutos para menos de 5.</div>
+        </div>
+        <div class="result-card">
+          <h3>D7 Retention</h3>
+          <div class="result-stat">+38%</div>
+          <div class="result-desc">Retenção no sétimo dia vs. baseline com onboarding anterior. Onboarding bem-feito é a melhor estratégia de retenção.</div>
+        </div>
+        <div class="result-card">
+          <h3>Drop-off Prompt</h3>
+          <div class="result-stat">−52%</div>
+          <div class="result-desc">Queda no abandono na tela de primeiro input. Fragmento pré-preenchido eliminou a paralisia da tela em branco.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- REFLECTION -->
+  <section class="section" aria-label="Reflexão">
+    <div class="container">
+      <span class="section-label reveal">Reflexão</span>
+      <h2 class="section-heading reveal" style="animation-delay:0.1s;">
+        O que aprendi —<br/>e o que faria diferente
+      </h2>
+
+      <div class="reflection-block reveal" style="animation-delay:0.15s;">
+        <div class="reflection-quote">
+          "O maior erro em onboarding de AI não é mostrar demais. É confiar de menos no usuário — e compensar isso com explicação."
+        </div>
+
+        <p>
+          Se eu pudesse refazer, investiria mais cedo em <strong>personalização de intenções</strong>. Os três cartões de entrada funcionam bem para um público amplo, mas usuários avançados (que já usam AI no dia a dia) sentiriam o onboarding genérico demais. Uma camada de detecção de contexto — ou simplesmente uma opção "começo sozinho" — daria mais agência a quem não precisa do guia.
+        </p>
+
+        <p>
+          Aprendi que <strong>menos fricção não é o mesmo que menos esforço cognitivo</strong>. O onboarding mais eficaz não é o mais curto — é aquele em que cada segundo tem peso. O usuário pode percorrer cinco telas e sentir que fez algo significativo. Ou percorrer duas e sentir que não aconteceu nada. A diferença está no design do momento, não no número de passos.
+        </p>
+
+        <p>
+          O <strong>próximo ciclo</strong> deste projeto seria validar a hipótese de personalização: segmentar o onboarding por contexto de uso (pessoal vs. trabalho vs. criativo) e medir se TTFV e D7 melhoram quando as intenções iniciais são adaptadas. Suspeito que sim — e que o lift seria ainda maior do que o atual.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="container">
+    <div class="case-cta reveal">
+      <div>
+        <p>Quer explorar mais casos ou conversar sobre esse projeto?</p>
+      </div>
+      <div class="cta-links">
+        <a href="../index.html#cases" class="btn-ghost">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Todos os cases
+        </a>
+        <a href="../index.html#contact" class="btn-primary">
+          Vamos conversar
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <span>© 2025 Eduardo Azuolas. Projetado com intenção.</span>
+    <a href="#" class="footer-link" aria-label="Voltar ao topo">Voltar ao topo ↑</a>
+  </footer>
+
+  <script>
+    // ─── NAVBAR SCROLL ───
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ─── REVEAL ANIMATIONS ───
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
